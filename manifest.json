@@ -1,0 +1,21 @@
+{
+  "name": "Mekarindah Murottal & Radio",
+  "short_name": "Mekarindah",
+  "description": "Aplikasi Murottal Al-Quran dan Radio Streaming Mekarindah",
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#10b981",
+  "icons": [
+    {
+      "src": "https://mekarindah.netlify.app/img/default.jpg",
+      "sizes": "192x192",
+      "type": "image/jpeg"
+    },
+    {
+      "src": "https://mekarindah.netlify.app/img/default.jpg",
+      "sizes": "512x512",
+      "type": "image/jpeg"
+    }
+  ]
+}
