@@ -179,17 +179,14 @@
             
             <div class="track-info">
     <h2 id="currentTrackTitle">
-        <span class="cc_streaminfo" data-type="song" data-username="kiarafm">Memuat...</span>
+        <span class="cc_streaminfo" data-type="song" data-username="kiarafm">Memuat Judul...</span>
     </h2>
     <p id="currentReciter">
-        <span class="cc_streaminfo" data-type="artist" data-username="kiarafm">Silakan Tunggu</span>
+        <span class="cc_streaminfo" data-type="artist" data-username="kiarafm">Memuat Artis...</span>
     </p>
 </div>
 
-<script language="javascript" type="text/javascript" src="https://eu1.fastcast4u.com/system/streaminfo.js"></script>
-
-
-            <div class="controls-wrapper">
+        <div class="controls-wrapper">
                 <select id="surahSelect" class="surah-select" onchange="handleSurahChange(this.value)">
                     <option value="" disabled selected>Pilih Surat</option>
                 </select>
@@ -335,28 +332,56 @@
 
         
 function setupRadioMetadata() {
-    // Kita gunakan MutationObserver untuk memantau perubahan teks 
-    // yang dilakukan oleh script otomatis dari FastCast4u
-    const targetNode = document.getElementById('currentReciter');
-    
-    const callback = (mutationsList) => {
-        for (const mutation of mutationsList) {
-            if (mutation.type === 'childList' || mutation.type === 'characterData') {
-                const artistName = targetNode.innerText.trim();
-                if (artistName && artistName !== "Silakan Tunggu" && state.mode === 'radio') {
-                    // Update Cover Art berdasarkan nama artis yang baru muncul
-                    coverArt.src = findArtistCover(artistName);
-                    statusText.innerText = "Streaming Aktif";
-                }
+let metaTracker = null; // Tambahkan ini di baris paling atas script
+
+function setupRadioMetadata() {
+    if(metaTracker) clearInterval(metaTracker);
+
+    // Fungsi untuk mensinkronkan Cover Art dengan teks yang muncul dari provider
+    const syncRadioUI = () => {
+        if(state.mode !== 'radio') return;
+
+        // Ambil teks yang dihasilkan oleh script streaminfo.js
+        const artistText = document.querySelector('[data-type="artist"]').innerText;
+        const songText = document.querySelector('[data-type="song"]').innerText;
+
+        // Jika teks sudah berubah (bukan lagi 'Memuat...')
+        if (artistText && !artistText.includes("Memuat")) {
+            // Update Cover Art berdasarkan nama artis
+            const newCover = findArtistCover(artistText);
+            if(coverArt.src !== newCover) {
+                coverArt.src = newCover;
             }
+            statusText.innerText = "Mekarindah Radio - Online";
         }
     };
 
-    const observer = new MutationObserver(callback);
-    observer.observe(targetNode, { childList: true, subtree: true, characterData: true });
+    // Jalankan pengecekan setiap 5 detik
+    metaTracker = setInterval(syncRadioUI, 5000);
+}
+
+function switchMode(m) {
+    state.mode = m;
+    pauseAudio();
     
-    // Simpan ke state agar bisa dihentikan jika perlu
-    state.radioObserver = observer;
+    if(metaTracker) clearInterval(metaTracker);
+
+    document.getElementById('modeAyah').classList.toggle('active', m === 'ayah');
+    document.getElementById('modeRadio').classList.toggle('active', m === 'radio');
+    document.getElementById('appMain').className = 'app-container ' + (m === 'radio' ? 'radio-active' : '');
+    document.body.className = 'mode-' + m;
+
+    if(m === 'radio') {
+        coverArt.src = RECITER_COVERS['default_radio'];
+        audioPlayer.src = CONFIG.RADIO_URL;
+        setupRadioMetadata(); 
+        playAudio();
+    } else {
+        // Balikkan teks ke mode Murottal agar span provider tidak mengganggu
+        trackTitle.innerHTML = "Memuat..."; 
+        reciterText.innerHTML = "Silakan Tunggu";
+        loadSurah(state.currentSurah?.number || 1, false);
+    }
 }
 
 
@@ -389,5 +414,9 @@ function setupRadioMetadata() {
     });
   }
 </script>
+
+    <script language="javascript" type="text/javascript" src="https://eu1.fastcast4u.com/system/streaminfo.js"></script>
+</body>
+    
 </body>
 </html>
