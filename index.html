@@ -178,9 +178,16 @@
             </div>
             
             <div class="track-info">
-                <h2 id="currentTrackTitle">Memuat...</h2>
-                <p id="currentReciter">Silakan Tunggu</p>
-            </div>
+    <h2 id="currentTrackTitle">
+        <span class="cc_streaminfo" data-type="song" data-username="kiarafm">Memuat...</span>
+    </h2>
+    <p id="currentReciter">
+        <span class="cc_streaminfo" data-type="artist" data-username="kiarafm">Silakan Tunggu</span>
+    </p>
+</div>
+
+<script language="javascript" type="text/javascript" src="https://eu1.fastcast4u.com/system/streaminfo.js"></script>
+
 
             <div class="controls-wrapper">
                 <select id="surahSelect" class="surah-select" onchange="handleSurahChange(this.value)">
@@ -300,9 +307,8 @@
     state.mode = m;
     pauseAudio();
     
-    // Hentikan interval radio jika pindah ke murottal
-    if(radioInterval) clearInterval(radioInterval);
-    if(state.eventSource) state.eventSource.close(); 
+    // Matikan observer jika ada
+    if(state.radioObserver) state.radioObserver.disconnect();
 
     document.getElementById('modeAyah').classList.toggle('active', m === 'ayah');
     document.getElementById('modeRadio').classList.toggle('active', m === 'radio');
@@ -310,17 +316,15 @@
     document.body.className = 'mode-' + m;
 
     if(m === 'radio') {
-        statusText.innerText = "Menghubungkan...";
-        trackTitle.innerText = "Mekarindah Radio";
-        reciterText.innerText = "Live Streaming";
         coverArt.src = RECITER_COVERS['default_radio'];
         audioPlayer.src = CONFIG.RADIO_URL;
-        setupRadioMetadata(); // Jalankan polling
+        setupRadioMetadata(); // Jalankan pemantau teks
         playAudio();
     } else {
         loadSurah(state.currentSurah?.number || 1, false);
     }
 }
+
 
 
         function findArtistCover(name) {
@@ -329,43 +333,32 @@
             return RECITER_COVERS['default_radio'];
         }
 
-        let radioInterval = null; // Tambahkan ini di bagian deklarasi state
-
-function setupRadioMetadata() {
-    // Bersihkan interval jika sebelumnya sudah ada
-    if(radioInterval) clearInterval(radioInterval);
-
-    const updateMeta = async () => {
-        if(state.mode !== 'radio') return;
         
-        try {
-            // Kita gunakan fetch biasa karena endpoint tersebut mengembalikan JSON
-            const response = await fetch(CONFIG.RADIO_META);
-            const data = await response.json();
-            
-            // Mengambil info dari properti 'getPropertyResponse' (Struktur umum FastCast4u)
-            // Jika struktur JSON berbeda, sesuaikan navigasi objeknya
-            if(data && data.return && data.return[0]) {
-                const info = data.return[0];
-                const fullTitle = info.title || "Mekarindah Radio - Live";
-                
-                // Pisahkan artis dan judul (biasanya dipisah tanda strip '-')
-                const parts = fullTitle.split(' - ');
-                const artist = parts[0] ? parts[0].trim() : "Mekarindah";
-                const song = parts[1] ? parts[1].trim() : "Streaming";
-
-                // Update UI
-                trackTitle.innerText = song;
-                reciterText.innerText = artist;
-                
-                // Update Cover berdasarkan nama artis/reciter
-                coverArt.src = findArtistCover(artist);
-                statusText.innerText = "Sedang Memutar: " + artist;
+function setupRadioMetadata() {
+    // Kita gunakan MutationObserver untuk memantau perubahan teks 
+    // yang dilakukan oleh script otomatis dari FastCast4u
+    const targetNode = document.getElementById('currentReciter');
+    
+    const callback = (mutationsList) => {
+        for (const mutation of mutationsList) {
+            if (mutation.type === 'childList' || mutation.type === 'characterData') {
+                const artistName = targetNode.innerText.trim();
+                if (artistName && artistName !== "Silakan Tunggu" && state.mode === 'radio') {
+                    // Update Cover Art berdasarkan nama artis yang baru muncul
+                    coverArt.src = findArtistCover(artistName);
+                    statusText.innerText = "Streaming Aktif";
+                }
             }
-        } catch (e) {
-            console.error("Gagal mengambil metadata radio", e);
         }
     };
+
+    const observer = new MutationObserver(callback);
+    observer.observe(targetNode, { childList: true, subtree: true, characterData: true });
+    
+    // Simpan ke state agar bisa dihentikan jika perlu
+    state.radioObserver = observer;
+}
+
 
     // Jalankan segera dan ulangi setiap 10 detik
     updateMeta();
