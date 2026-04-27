@@ -1,0 +1,1448 @@
+<!DOCTYPE html>
+<html lang="id" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Qur'an Murottal - Radio Suara Mekarindah</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Amiri+Quran&family=Scheherazade+New:wght@400;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    
+    <style>
+        /* ========== S T Y L E   S A M A   S E P E R T I   S E B E L U M N Y A ========== */
+        :root {
+            --primary-dark: #0a1628;
+            --primary-green: #0d4d3a;
+            --accent-gold: #d4af37;
+            --accent-gold-light: #f4d675;
+            --text-light: #e8e8e8;
+            --text-muted: #a0a0a0;
+            --glass-bg: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --arabic-font: 'Scheherazade New', 'Amiri Quran', serif;
+            --ui-font: 'Poppins', sans-serif;
+            --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body { height: 100%; overflow: hidden; }
+        
+        body {
+            font-family: var(--ui-font);
+            background: linear-gradient(135deg, var(--primary-dark) 0%, #0d2818 50%, #1a3a4a 100%);
+            color: var(--text-light);
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .bg-decoration {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: 0;
+        }
+        
+        .bg-decoration::before {
+            content: '';
+            position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+            background: radial-gradient(circle at 20% 30%, rgba(13, 77, 58, 0.4) 0%, transparent 40%),
+                        radial-gradient(circle at 80% 70%, rgba(212, 175, 55, 0.15) 0%, transparent 40%);
+            animation: bgFloat 20s ease-in-out infinite;
+        }
+        
+        @keyframes bgFloat {
+            0%, 100% { transform: translate(0, 0); }
+            50% { transform: translate(2%, 2%); }
+        }
+        
+        .player-container {
+            position: relative; z-index: 1; flex: 1;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            padding: 15px; padding-bottom: 180px; overflow-y: auto;
+        }
+        
+        .mode-switcher { display: flex; gap: 8px; margin-bottom: 15px; }
+        
+        .mode-btn {
+            padding: 8px 18px;
+            border: 2px solid var(--glass-border);
+            background: var(--glass-bg);
+            color: var(--text-light);
+            border-radius: 50px;
+            cursor: pointer;
+            font-family: var(--ui-font);
+            font-size: 0.8rem;
+            font-weight: 500;
+            transition: var(--transition-smooth);
+            backdrop-filter: blur(10px);
+            display: flex; align-items: center; gap: 6px;
+        }
+        
+        .mode-btn:hover {
+            border-color: var(--accent-gold);
+            background: rgba(212, 175, 55, 0.1);
+        }
+        
+        .mode-btn.active {
+            border-color: var(--accent-gold);
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.25) 0%, rgba(212, 175, 55, 0.1) 100%);
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.3);
+        }
+        
+        .radio-status {
+            display: none; align-items: center; justify-content: center; gap: 8px;
+            margin-bottom: 10px; padding: 6px 16px;
+            background: rgba(255, 68, 68, 0.1);
+            border: 1px solid rgba(255, 68, 68, 0.3);
+            border-radius: 30px; font-size: 0.75rem;
+        }
+        
+        .radio-status.active { display: flex; }
+        
+        .radio-live-dot {
+            width: 8px; height: 8px; background: #ff4444; border-radius: 50%;
+            animation: livePulse 1.5s ease-in-out infinite;
+        }
+        
+        @keyframes livePulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+        
+        .cover-wrapper { position: relative; margin-bottom: 15px; }
+        
+        .cover-art {
+            width: 130px; height: 130px; border-radius: 50%; object-fit: cover;
+            border: 4px solid var(--accent-gold);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5), 0 0 30px rgba(212, 175, 55, 0.3);
+            transition: var(--transition-smooth);
+        }
+        
+        .cover-art.playing {
+            animation: coverRotate 25s linear infinite, coverPulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes coverRotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        
+        @keyframes coverPulse {
+            0%, 100% { box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5), 0 0 30px rgba(212, 175, 55, 0.3); }
+            50% { box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5), 0 0 50px rgba(212, 175, 55, 0.5); }
+        }
+        
+        .cover-ring {
+            position: absolute; top: -10px; left: -10px; right: -10px; bottom: -10px;
+            border: 2px solid rgba(212, 175, 55, 0.3); border-radius: 50%;
+            animation: ringPulse 3s ease-in-out infinite;
+        }
+        
+        .cover-ring:nth-child(2) {
+            top: -20px; left: -20px; right: -20px; bottom: -20px;
+            animation-delay: 0.5s; border-color: rgba(212, 175, 55, 0.15);
+        }
+        
+        @keyframes ringPulse {
+            0%, 100% { transform: scale(1); opacity: 0.5; }
+            50% { transform: scale(1.05); opacity: 1; }
+        }
+        
+        .visualizer {
+            display: flex; align-items: flex-end; justify-content: center;
+            gap: 3px; height: 25px; margin-bottom: 12px;
+        }
+        
+        .visualizer-bar {
+            width: 4px;
+            background: linear-gradient(to top, var(--accent-gold), var(--accent-gold-light));
+            border-radius: 2px; transition: height 0.1s ease;
+        }
+        
+        .visualizer.playing .visualizer-bar { animation: visualize 0.4s ease-in-out infinite alternate; }
+        
+        .visualizer-bar:nth-child(1) { animation-delay: 0s; height: 10px; }
+        .visualizer-bar:nth-child(2) { animation-delay: 0.1s; height: 18px; }
+        .visualizer-bar:nth-child(3) { animation-delay: 0.15s; height: 25px; }
+        .visualizer-bar:nth-child(4) { animation-delay: 0.2s; height: 15px; }
+        .visualizer-bar:nth-child(5) { animation-delay: 0.25s; height: 22px; }
+        .visualizer-bar:nth-child(6) { animation-delay: 0.3s; height: 18px; }
+        .visualizer-bar:nth-child(7) { animation-delay: 0.35s; height: 10px; }
+        
+        @keyframes visualize { from { transform: scaleY(0.3); } to { transform: scaleY(1); } }
+        
+        .visualizer:not(.playing) .visualizer-bar { height: 4px !important; animation: none; }
+        
+        .now-playing-info { text-align: center; margin-bottom: 15px; }
+        
+        .qari-name {
+            font-size: 0.7rem; color: var(--accent-gold);
+            text-transform: uppercase; letter-spacing: 2px; margin-bottom: 6px;
+        }
+        
+        .surah-selector {
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+            cursor: pointer; padding: 8px 16px; border-radius: 12px;
+            transition: var(--transition-smooth);
+        }
+        
+        .surah-selector:hover { background: var(--glass-bg); }
+        .surah-name { font-size: 1.3rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 220px; }
+        .surah-arabic { font-family: var(--arabic-font); font-size: 1.5rem; color: var(--accent-gold); }
+        .surah-selector i { color: var(--text-muted); font-size: 1rem; }
+        .ayah-info { font-size: 0.85rem; color: var(--text-muted); margin-top: 6px; }
+        .ayah-info span { color: var(--accent-gold); font-weight: 600; }
+        
+        .progress-section { width: 100%; max-width: 400px; margin-bottom: 15px; }
+        
+        .progress-bar {
+            width: 100%; height: 5px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px; cursor: pointer; position: relative;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent-gold) 0%, var(--accent-gold-light) 100%);
+            border-radius: 10px; width: 0%; transition: width 0.1s linear; position: relative;
+        }
+        
+        .progress-fill::after {
+            content: ''; position: absolute; right: -6px; top: 50%; transform: translateY(-50%);
+            width: 12px; height: 12px; background: var(--accent-gold); border-radius: 50%;
+            box-shadow: 0 0 10px rgba(212, 175, 55, 0.6);
+        }
+        
+        .progress-times {
+            display: flex; justify-content: space-between;
+            margin-top: 6px; font-size: 0.75rem; color: var(--text-muted);
+        }
+        
+        .controls {
+            display: flex; align-items: center; justify-content: center;
+            gap: 15px; margin-bottom: 15px;
+        }
+        
+        .control-btn {
+            width: 42px; height: 42px; border-radius: 50%; border: none;
+            background: var(--glass-bg); color: var(--text-light);
+            cursor: pointer; font-size: 1rem; transition: var(--transition-smooth);
+            display: flex; align-items: center; justify-content: center;
+            backdrop-filter: blur(10px);
+        }
+        
+        .control-btn:hover {
+            background: rgba(212, 175, 55, 0.2);
+            color: var(--accent-gold); transform: scale(1.1);
+        }
+        
+        .control-btn:disabled { opacity: 0.3; cursor: not-allowed; transform: none; }
+        
+        .control-btn.play-btn {
+            width: 60px; height: 60px;
+            background: linear-gradient(135deg, var(--accent-gold) 0%, #b8962e 100%);
+            color: var(--primary-dark); font-size: 1.4rem;
+            box-shadow: 0 8px 30px rgba(212, 175, 55, 0.4);
+        }
+        
+        .control-btn.play-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 12px 40px rgba(212, 175, 55, 0.5);
+        }
+        
+        .secondary-controls {
+            display: flex; align-items: center; justify-content: center;
+            gap: 12px; flex-wrap: wrap;
+        }
+        
+        .volume-control { display: flex; align-items: center; gap: 8px; }
+        
+        .volume-control i {
+            color: var(--text-muted); font-size: 0.95rem;
+            cursor: pointer; transition: var(--transition-smooth);
+        }
+        
+        .volume-control i:hover { color: var(--accent-gold); }
+        
+        .volume-slider {
+            width: 80px; height: 4px; -webkit-appearance: none; appearance: none;
+            background: rgba(255, 255, 255, 0.1); border-radius: 10px;
+            outline: none; cursor: pointer;
+        }
+        
+        .volume-slider::-webkit-slider-thumb {
+            -webkit-appearance: none; appearance: none;
+            width: 12px; height: 12px; background: var(--accent-gold);
+            border-radius: 50%; cursor: pointer;
+        }
+        
+        .toggle-btn {
+            padding: 7px 14px; border-radius: 20px;
+            border: 1px solid var(--glass-border); background: transparent;
+            color: var(--text-muted); font-size: 0.75rem;
+            cursor: pointer; transition: var(--transition-smooth);
+            display: flex; align-items: center; gap: 5px; font-family: var(--ui-font);
+        }
+        
+        .toggle-btn:hover, .toggle-btn.active {
+            border-color: var(--accent-gold); color: var(--accent-gold);
+            background: rgba(212, 175, 55, 0.1);
+        }
+        
+        .running-text-container {
+            position: fixed; bottom: 0; left: 0; right: 0;
+            background: linear-gradient(to top, rgba(10, 22, 40, 0.98) 0%, rgba(10, 22, 40, 0.95) 100%);
+            border-top: 1px solid var(--glass-border);
+            backdrop-filter: blur(20px); z-index: 100; padding: 12px 20px 15px;
+        }
+        
+        .running-header {
+            display: flex; align-items: center; justify-content: center;
+            gap: 10px; margin-bottom: 10px;
+        }
+        
+        .running-label {
+            font-size: 0.7rem; color: var(--accent-gold);
+            text-transform: uppercase; letter-spacing: 2px;
+        }
+        
+        .running-ayah-badge {
+            background: rgba(212, 175, 55, 0.2); color: var(--accent-gold);
+            padding: 4px 12px; border-radius: 15px; font-size: 0.75rem; font-weight: 600;
+        }
+        
+        .running-content { max-width: 900px; margin: 0 auto; }
+        
+        .running-arabic-wrapper { overflow: hidden; margin-bottom: 10px; position: relative; }
+        
+        .running-arabic-wrapper::before, .running-arabic-wrapper::after {
+            content: ''; position: absolute; top: 0; bottom: 0; width: 40px;
+            z-index: 2; pointer-events: none;
+        }
+        
+        .running-arabic-wrapper::before {
+            left: 0;
+            background: linear-gradient(to right, rgba(10, 22, 40, 1) 0%, transparent 100%);
+        }
+        
+        .running-arabic-wrapper::after {
+            right: 0;
+            background: linear-gradient(to left, rgba(10, 22, 40, 1) 0%, transparent 100%);
+        }
+        
+        .running-arabic {
+            font-family: var(--arabic-font); font-size: 1.5rem; line-height: 2;
+            color: var(--text-light); direction: rtl; text-align: center;
+            display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+            overflow: hidden; padding: 0 10px;
+            animation: arabicGlow 3s ease-in-out infinite;
+        }
+        
+        @keyframes arabicGlow {
+            0%, 100% { text-shadow: 0 0 10px rgba(212, 175, 55, 0.1); }
+            50% { text-shadow: 0 0 20px rgba(212, 175, 55, 0.3); }
+        }
+        
+        .running-arabic.playing {
+            animation: arabicScroll 20s linear infinite, arabicGlow 3s ease-in-out infinite;
+        }
+        
+        @keyframes arabicScroll {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-30%); }
+        }
+        
+        .running-separator {
+            height: 1px;
+            background: linear-gradient(90deg, transparent 0%, var(--accent-gold) 20%, var(--accent-gold) 80%, transparent 100%);
+            margin: 8px auto; max-width: 200px; opacity: 0.5;
+        }
+        
+        .running-translation-wrapper { overflow: hidden; position: relative; }
+        
+        .running-translation-wrapper::before, .running-translation-wrapper::after {
+            content: ''; position: absolute; top: 0; bottom: 0; width: 40px;
+            z-index: 2; pointer-events: none;
+        }
+        
+        .running-translation-wrapper::before {
+            left: 0;
+            background: linear-gradient(to right, rgba(10, 22, 40, 1) 0%, transparent 100%);
+        }
+        
+        .running-translation-wrapper::after {
+            right: 0;
+            background: linear-gradient(to left, rgba(10, 22, 40, 1) 0%, transparent 100%);
+        }
+        
+        .running-translation {
+            font-size: 0.95rem; line-height: 1.6; color: var(--text-muted);
+            text-align: center; display: -webkit-box;
+            -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+            overflow: hidden; padding: 0 10px; font-style: italic;
+        }
+        
+        .running-translation.playing { animation: transScroll 25s linear infinite; }
+        
+        @keyframes transScroll {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-20%); }
+        }
+        
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(10px);
+            z-index: 1000; display: none; align-items: center; justify-content: center;
+            padding: 20px;
+        }
+        
+        .modal-overlay.active { display: flex; }
+        
+        .modal-content {
+            background: linear-gradient(135deg, var(--primary-dark) 0%, #0d2818 100%);
+            border: 1px solid var(--glass-border); border-radius: 24px;
+            max-width: 600px; width: 100%; max-height: 80vh; overflow: hidden;
+            animation: modalSlideIn 0.3s ease;
+        }
+        
+        @keyframes modalSlideIn {
+            from { opacity: 0; transform: translateY(-30px) scale(0.95); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        
+        .modal-header {
+            padding: 20px; border-bottom: 1px solid var(--glass-border);
+            display: flex; align-items: center; justify-content: space-between;
+        }
+        
+        .modal-header h3 { font-size: 1.1rem; color: var(--accent-gold); }
+        
+        .modal-close {
+            width: 36px; height: 36px; border-radius: 50%; border: none;
+            background: var(--glass-bg); color: var(--text-light);
+            cursor: pointer; font-size: 1rem; transition: var(--transition-smooth);
+        }
+        
+        .modal-close:hover { background: rgba(255, 100, 100, 0.2); color: #ff6b6b; }
+        
+        .modal-search { padding: 0 20px; padding-top: 15px; }
+        
+        .modal-search input {
+            width: 100%; padding: 12px 16px;
+            background: rgba(0, 0, 0, 0.3); border: 1px solid var(--glass-border);
+            border-radius: 10px; color: var(--text-light);
+            font-family: var(--ui-font); font-size: 0.9rem;
+            outline: none; transition: var(--transition-smooth);
+        }
+        
+        .modal-search input::placeholder { color: var(--text-muted); }
+        .modal-search input:focus { border-color: var(--accent-gold); }
+        
+        .modal-tabs { display: flex; padding: 15px 20px; gap: 8px; }
+        
+        .modal-tab {
+            flex: 1; padding: 10px; background: transparent;
+            border: 1px solid var(--glass-border); color: var(--text-muted);
+            border-radius: 8px; cursor: pointer; font-family: var(--ui-font);
+            font-size: 0.85rem; transition: var(--transition-smooth);
+        }
+        
+        .modal-tab:hover { border-color: var(--accent-gold); color: var(--text-light); }
+        
+        .modal-tab.active {
+            background: rgba(212, 175, 55, 0.2);
+            border-color: var(--accent-gold); color: var(--accent-gold);
+        }
+        
+        .modal-body {
+            padding: 0 20px 20px; max-height: calc(80vh - 180px); overflow-y: auto;
+        }
+        
+        .modal-body::-webkit-scrollbar { width: 5px; }
+        .modal-body::-webkit-scrollbar-thumb { background: var(--glass-border); border-radius: 10px; }
+        
+        .surah-list-item {
+            padding: 12px; border-radius: 10px; cursor: pointer;
+            transition: var(--transition-smooth); margin-bottom: 6px;
+            border: 1px solid transparent; display: flex; align-items: center; gap: 12px;
+        }
+        
+        .surah-list-item:hover { background: var(--glass-bg); border-color: var(--glass-border); }
+        .surah-list-item.active { background: rgba(212, 175, 55, 0.15); border-color: var(--accent-gold); }
+        
+        .surah-list-number {
+            width: 36px; height: 36px; background: rgba(212, 175, 55, 0.2);
+            color: var(--accent-gold); border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 600; font-size: 0.8rem; flex-shrink: 0;
+        }
+        
+        .surah-list-info { flex: 1; }
+        .surah-list-name { font-weight: 500; font-size: 0.9rem; margin-bottom: 2px; }
+        .surah-list-meta { font-size: 0.7rem; color: var(--text-muted); }
+        .surah-list-arabic { font-family: var(--arabic-font); font-size: 1.2rem; color: var(--accent-gold); }
+        
+        .ayah-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(50px, 1fr)); gap: 8px;
+        }
+        
+        .ayah-grid-item {
+            aspect-ratio: 1; display: flex; align-items: center; justify-content: center;
+            background: var(--glass-bg); border: 1px solid var(--glass-border);
+            border-radius: 8px; cursor: pointer; font-size: 0.85rem;
+            color: var(--text-light); transition: var(--transition-smooth);
+        }
+        
+        .ayah-grid-item:hover { border-color: var(--accent-gold); background: rgba(212, 175, 55, 0.2); }
+        
+        .ayah-grid-item.current {
+            background: linear-gradient(135deg, var(--accent-gold) 0%, #b8962e 100%);
+            color: var(--primary-dark); font-weight: 600; border-color: var(--accent-gold);
+        }
+        
+        .toast-container {
+            position: fixed; top: 15px; right: 15px; z-index: 2000;
+            display: flex; flex-direction: column; gap: 8px;
+        }
+        
+        .toast {
+            padding: 12px 20px;
+            background: linear-gradient(135deg, rgba(13, 77, 58, 0.95) 0%, rgba(10, 22, 40, 0.95) 100%);
+            border: 1px solid var(--glass-border); border-radius: 10px;
+            backdrop-filter: blur(10px); color: var(--text-light); font-size: 0.8rem;
+            display: flex; align-items: center; gap: 10px;
+            animation: toastSlide 0.3s ease;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+        
+        @keyframes toastSlide {
+            from { opacity: 0; transform: translateX(50px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        
+        .toast.success i { color: #4caf50; }
+        .toast.error i { color: #ff6b6b; }
+        .toast.info i { color: var(--accent-gold); }
+        
+        .loading-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--primary-dark); display: flex; flex-direction: column;
+            align-items: center; justify-content: center; z-index: 3000;
+            transition: opacity 0.5s ease;
+        }
+        
+        .loading-overlay.hidden { opacity: 0; pointer-events: none; }
+        
+        .loading-spinner {
+            width: 50px; height: 50px;
+            border: 3px solid var(--glass-border); border-top-color: var(--accent-gold);
+            border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 15px;
+        }
+        
+        @keyframes spin { to { transform: rotate(360deg); } }
+        
+        .loading-text { color: var(--text-muted); font-size: 0.9rem; }
+        
+        @media (max-width: 768px) {
+            .player-container { padding-bottom: 170px; }
+            .cover-art { width: 110px; height: 110px; }
+            .surah-name { font-size: 1.1rem; max-width: 180px; }
+            .surah-arabic { font-size: 1.3rem; }
+            .controls { gap: 12px; }
+            .control-btn { width: 38px; height: 38px; font-size: 0.9rem; }
+            .control-btn.play-btn { width: 55px; height: 55px; font-size: 1.2rem; }
+            .running-arabic { font-size: 1.3rem; line-height: 1.8; }
+            .running-translation { font-size: 0.85rem; }
+            .secondary-controls { gap: 8px; }
+            .toggle-btn { padding: 6px 10px; font-size: 0.7rem; }
+        }
+        
+        @media (max-width: 480px) {
+            .player-container { padding: 10px; padding-bottom: 160px; }
+            .mode-btn { padding: 6px 12px; font-size: 0.7rem; }
+            .cover-art { width: 100px; height: 100px; }
+            .volume-control { display: none; }
+            .surah-selector { flex-direction: column; gap: 3px; }
+            .running-text-container { padding: 10px 15px 12px; }
+            .running-arabic { font-size: 1.15rem; }
+            .running-translation { font-size: 0.8rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-decoration"></div>
+    
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner"></div>
+        <p class="loading-text">Memuat Al-Qur'an...</p>
+    </div>
+    
+    <div class="player-container">
+        <div class="mode-switcher">
+            <button class="mode-btn active" id="ayahModeBtn" onclick="switchMode('ayah')">
+                <i class="fas fa-book-open"></i> Murottal
+            </button>
+            <button class="mode-btn" id="radioModeBtn" onclick="switchMode('radio')">
+                <i class="fas fa-broadcast-tower"></i> Suara Mekarindah
+            </button>
+        </div>
+        
+        <div class="radio-status" id="radioStatus">
+            <div class="radio-live-dot"></div>
+            <span>LIVE - Radio Suara Mekarindah</span>
+        </div>
+        
+        <div class="cover-wrapper">
+            <div class="cover-ring"></div>
+            <div class="cover-ring"></div>
+            <img src="" alt="Qari" class="cover-art" id="coverArt">
+        </div>
+        
+        <div class="visualizer" id="visualizer">
+            <div class="visualizer-bar"></div>
+            <div class="visualizer-bar"></div>
+            <div class="visualizer-bar"></div>
+            <div class="visualizer-bar"></div>
+            <div class="visualizer-bar"></div>
+            <div class="visualizer-bar"></div>
+            <div class="visualizer-bar"></div>
+        </div>
+        
+        <div class="now-playing-info">
+            <div class="qari-name" id="qariName">Mishary Rashid Alafasy</div>
+            <div class="surah-selector" onclick="openSurahModal()">
+                <span class="surah-name" id="surahName">Al-Fatihah</span>
+                <span class="surah-arabic" id="surahArabic">الفاتحة</span>
+                <i class="fas fa-chevron-down"></i>
+            </div>
+            <div class="ayah-info" id="ayahInfo">
+                Ayat <span id="currentAyahNum">1</span> dari <span id="totalAyah">7</span>
+            </div>
+        </div>
+        
+        <div class="progress-section">
+            <div class="progress-bar" id="progressBar" onclick="seekAudio(event)">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <div class="progress-times">
+                <span id="currentTime">0:00</span>
+                <span id="duration">0:00</span>
+            </div>
+        </div>
+        
+        <div class="controls">
+            <button class="control-btn" id="prevBtn" onclick="prevAyah()"><i class="fas fa-step-backward"></i></button>
+            <button class="control-btn" onclick="rewind()"><i class="fas fa-undo"></i></button>
+            <button class="control-btn play-btn" id="playBtn" onclick="togglePlay()">
+                <i class="fas fa-play" id="playIcon"></i>
+            </button>
+            <button class="control-btn" onclick="forward()"><i class="fas fa-redo"></i></button>
+            <button class="control-btn" id="nextBtn" onclick="nextAyah()"><i class="fas fa-step-forward"></i></button>
+        </div>
+        
+        <div class="secondary-controls">
+            <div class="volume-control">
+                <i class="fas fa-volume-up" id="volumeIcon" onclick="toggleMute()"></i>
+                <input type="range" class="volume-slider" id="volumeSlider" min="0" max="100" value="80" oninput="changeVolume(this.value)">
+            </div>
+            <button class="toggle-btn active" id="autoPlayBtn" onclick="toggleAutoPlay()">
+                <i class="fas fa-forward"></i> Auto
+            </button>
+            <button class="toggle-btn" id="repeatBtn" onclick="toggleRepeat()">
+                <i class="fas fa-repeat"></i> Ulangi
+            </button>
+            <button class="toggle-btn" onclick="openAyahModal()">
+                <i class="fas fa-list-ol"></i> Pilih Ayat
+            </button>
+        </div>
+    </div>
+    
+    <div class="running-text-container">
+        <div class="running-header">
+            <span class="running-label"><i class="fas fa-quran"></i> Ayat Yang Dibaca</span>
+            <span class="running-ayah-badge" id="runningAyahBadge">1:1</span>
+        </div>
+        <div class="running-content">
+            <div class="running-arabic-wrapper">
+                <div class="running-arabic" id="runningArabic">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</div>
+            </div>
+            <div class="running-separator"></div>
+            <div class="running-translation-wrapper">
+                <div class="running-translation" id="runningTranslation">Dengan nama Allah Yang Maha Pengasih, Maha Penyayang.</div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="modal-overlay" id="surahModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-book-quran"></i> Pilih Surah</h3>
+                <button class="modal-close" onclick="closeSurahModal()"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-search">
+                <input type="text" id="surahSearch" placeholder="Cari surah..." oninput="filterSurahs()">
+            </div>
+            <div class="modal-tabs">
+                <button class="modal-tab active" id="surahTabBtn" onclick="switchModalTab('surah')">Surah</button>
+                <button class="modal-tab" id="juzTabBtn" onclick="switchModalTab('juz')">Juz</button>
+            </div>
+            <div class="modal-body" id="surahList"></div>
+        </div>
+    </div>
+    
+    <div class="modal-overlay" id="ayahModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="ayahModalTitle"><i class="fas fa-list-ol"></i> Pilih Ayat</h3>
+                <button class="modal-close" onclick="closeAyahModal()"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body">
+                <div class="ayah-grid" id="ayahGrid"></div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="toast-container" id="toastContainer"></div>
+    
+    <audio id="audioPlayer" preload="auto"></audio>
+
+    <!-- ELEMEN TERSEMBUNYI UNTUK STREAMINFO FASTCAST4U -->
+    <div style="display:none;" id="fastcastStreamInfo">
+        <span class="cc_streaminfo" data-type="song" data-username="kiarafm">Loading ...</span>
+    </div>
+    <script src="https://eu1.fastcast4u.com/system/streaminfo.js"></script>
+
+    <script>
+        // ========== RECITER COVERS (TAMBAHAN BARU) ==========
+        const RECITER_COVERS = {
+            'mishary': 'https://i.ytimg.com/vi/GLMp_EGGLfk/hq720.jpg?sqp=-oaymwExCK4FEIIDSFryq4qpAyMIARUAAIhCGAHwAQH4AdQGgALgA4oCDAgAEAEYciBWKDgwDw==&rs=AOn4CLAa_DZgLB8D4xcMTFPgxpnQghg_sw',
+            'abdul': 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT99qAcwhSDEUMmxHHzjEfna9YVgtg-04A8rDvXbaNtZf-70ZkRxFPl_i5J_he-DnfdtO7EhS0ouUaiu-hq_bE8Ni9U3xKBjsAdFgzAg4w&s=10',
+            'adi hidayat': 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQi7cw0cL0cs4aqyXA5sbBMBaCWGmW0D28pzruJKEWXlx9RYeQLuZouy9VlqLk9oWvOxlO7jHAh6QOXhjPyKPQZqz2rez4YV5XOPrgTTQ&s=10',
+            'zainuddin': 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSDo4WarU6dxMHRx3BFqisexu4euGqv9Ni9_JZA5jZBwA&s=10',
+            'latif': 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQSgeut2z_VzZzl5_B7sbcdxL2FkG3Rd3dOTaS3WCOXEA&s=10',
+            'al sudais': 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/24/Abdulrahman_Al-Sudais.jpg/440px-Abdulrahman_Al-Sudais.jpg',
+            'lili': 'https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/63/25/dd/6325ddda-63aa-0d43-ac16-46dd36a0afce/artwork.jpg/592x592bb.webp',
+            'shatri': 'https://i.ibb.co/fQ5N204/shatri.jpg',
+            'abdul basit': 'https://i.ibb.co/RzM805h/abdulbasit.jpg'
+        };
+        
+        // ============================================
+        // CONSTANTS & CONFIGURATION
+        // ============================================
+        const QARI_IMAGE = 'https://i.ytimg.com/vi/GLMp_EGGLfk/hq720.jpg?sqp=-oaymwExCK4FEIIDSFryq4qpAyMIARUAAIhCGAHwAQH4AdQGgALgA4oCDAgAEAEYciBWKDgwDw==&rs=AOn4CLAa_DZgLB8D4xcMTFPgxpnQghg_sw';
+        const RADIO_STREAM_URL = 'https://eu1.fastcast4u.com/proxy/kiarafm/stream';
+        const DEFAULT_RADIO_COVER = 'https://mekarindah.netlify.app/img/default.jpg';
+        const API_BASE = 'https://api.quran.gading.dev';
+        const AUDIO_BASE = 'https://cdn.islamic.network/quran/audio/128/ar.alafasy';
+        
+        const JUZ_MAPPING = [
+            { juz: 1, start: { surah: 1, ayah: 1 }, end: { surah: 2, ayah: 141 } },
+            { juz: 2, start: { surah: 2, ayah: 142 }, end: { surah: 2, ayah: 252 } },
+            { juz: 3, start: { surah: 2, ayah: 253 }, end: { surah: 3, ayah: 92 } },
+            { juz: 4, start: { surah: 3, ayah: 93 }, end: { surah: 4, ayah: 23 } },
+            { juz: 5, start: { surah: 4, ayah: 24 }, end: { surah: 4, ayah: 147 } },
+            { juz: 6, start: { surah: 4, ayah: 148 }, end: { surah: 5, ayah: 81 } },
+            { juz: 7, start: { surah: 5, ayah: 82 }, end: { surah: 6, ayah: 110 } },
+            { juz: 8, start: { surah: 6, ayah: 111 }, end: { surah: 7, ayah: 87 } },
+            { juz: 9, start: { surah: 7, ayah: 88 }, end: { surah: 8, ayah: 40 } },
+            { juz: 10, start: { surah: 8, ayah: 41 }, end: { surah: 9, ayah: 92 } },
+            { juz: 11, start: { surah: 9, ayah: 93 }, end: { surah: 11, ayah: 5 } },
+            { juz: 12, start: { surah: 11, ayah: 6 }, end: { surah: 12, ayah: 52 } },
+            { juz: 13, start: { surah: 12, ayah: 53 }, end: { surah: 14, ayah: 52 } },
+            { juz: 14, start: { surah: 15, ayah: 1 }, end: { surah: 16, ayah: 128 } },
+            { juz: 15, start: { surah: 17, ayah: 1 }, end: { surah: 18, ayah: 74 } },
+            { juz: 16, start: { surah: 18, ayah: 75 }, end: { surah: 20, ayah: 135 } },
+            { juz: 17, start: { surah: 21, ayah: 1 }, end: { surah: 22, ayah: 78 } },
+            { juz: 18, start: { surah: 23, ayah: 1 }, end: { surah: 25, ayah: 20 } },
+            { juz: 19, start: { surah: 25, ayah: 21 }, end: { surah: 27, ayah: 55 } },
+            { juz: 20, start: { surah: 27, ayah: 56 }, end: { surah: 29, ayah: 45 } },
+            { juz: 21, start: { surah: 29, ayah: 46 }, end: { surah: 33, ayah: 30 } },
+            { juz: 22, start: { surah: 33, ayah: 31 }, end: { surah: 36, ayah: 27 } },
+            { juz: 23, start: { surah: 36, ayah: 28 }, end: { surah: 39, ayah: 31 } },
+            { juz: 24, start: { surah: 39, ayah: 32 }, end: { surah: 41, ayah: 46 } },
+            { juz: 25, start: { surah: 41, ayah: 47 }, end: { surah: 45, ayah: 37 } },
+            { juz: 26, start: { surah: 46, ayah: 1 }, end: { surah: 51, ayah: 30 } },
+            { juz: 27, start: { surah: 51, ayah: 31 }, end: { surah: 57, ayah: 29 } },
+            { juz: 28, start: { surah: 58, ayah: 1 }, end: { surah: 66, ayah: 12 } },
+            { juz: 29, start: { surah: 67, ayah: 1 }, end: { surah: 77, ayah: 50 } },
+            { juz: 30, start: { surah: 78, ayah: 1 }, end: { surah: 114, ayah: 6 } }
+        ];
+        
+        const SURAH_VERSE_COUNTS = [7,286,200,176,120,165,206,75,129,109,123,111,43,52,99,128,111,110,98,135,112,78,118,64,77,227,93,88,69,60,34,30,73,54,45,83,182,88,75,85,54,53,89,59,37,35,38,29,18,45,60,49,62,55,78,96,29,22,24,13,14,11,11,18,12,12,30,52,52,44,28,28,20,56,40,31,50,40,46,42,29,19,36,25,22,17,19,26,30,20,15,21,11,8,8,19,5,8,8,11,11,8,3,9,5,4,7,3,6,3,5,4,5,6];
+        
+        // ============================================
+        // STATE
+        // ============================================
+        const state = {
+            mode: 'ayah',
+            modalTab: 'surah',
+            surahs: [],
+            surahCache: {},
+            currentSurah: null,
+            currentAyah: 1,
+            ayahs: [],
+            isPlaying: false,
+            autoPlay: true,
+            repeat: false,
+            volume: 0.8,
+            isMuted: false,
+            isLoading: false,
+            pendingPlay: false,
+            // Radio now playing
+            radioTitle: "Radio Suara Mekarindah",
+            radioArtist: "Live Streaming",
+            radioCover: DEFAULT_RADIO_COVER
+        };
+        
+        // ============================================
+        // HELPER FUNCTIONS
+        // ============================================
+        function $(id) {
+            return document.getElementById(id);
+        }
+        
+        function setText(id, text) {
+            const el = $(id);
+            if (el) el.textContent = text;
+        }
+        
+        function setHTML(id, html) {
+            const el = $(id);
+            if (el) el.innerHTML = html;
+        }
+        
+        function addClass(id, className) {
+            const el = $(id);
+            if (el) el.classList.add(className);
+        }
+        
+        function removeClass(id, className) {
+            const el = $(id);
+            if (el) el.classList.remove(className);
+        }
+        
+        function toggleClass(id, className, force) {
+            const el = $(id);
+            if (el) el.classList.toggle(className, force);
+        }
+        
+        // ========== FUNGSI PENCARIAN COVER BERDASARKAN RECITER ==========
+        function getReciterCover(text) {
+            if (!text) return null;
+            const lower = text.toLowerCase();
+            for (const key in RECITER_COVERS) {
+                if (lower.includes(key)) {
+                    return RECITER_COVERS[key];
+                }
+            }
+            return null;
+        }
+        
+        // ============================================
+        // INITIALIZATION
+        // ============================================
+        document.addEventListener('DOMContentLoaded', function() {
+            initApp();
+        });
+        
+        async function initApp() {
+            try {
+                const coverArt = $('coverArt');
+                if (coverArt) coverArt.src = QARI_IMAGE;
+                
+                const audioPlayer = $('audioPlayer');
+                if (audioPlayer) {
+                    audioPlayer.volume = state.volume;
+                    setupAudioEvents();
+                }
+                
+                await loadSurahs();
+                
+                if (state.surahs.length > 0) {
+                    await loadSurah(1, false); // false = jangan auto-play
+                }
+                
+                addClass('loadingOverlay', 'hidden');
+                
+                // Setup metadata listener untuk mode radio (FastCast4u)
+                setupRadioMetadataListener();
+                
+            } catch (error) {
+                console.error('Init error:', error);
+                addClass('loadingOverlay', 'hidden');
+                showToast('Gagal memuat aplikasi', 'error');
+            }
+        }
+        
+        // ============================================
+        // METADATA RADIO (FASTCAST4U) + UPDATE COVER RECITER
+        // ============================================
+        function setupRadioMetadataListener() {
+            // Cek elemen cc_streaminfo setiap 3 detik
+            setInterval(function() {
+                if (state.mode !== 'radio') return;
+                const elem = document.querySelector('.cc_streaminfo');
+                if (elem) {
+                    const raw = elem.innerText || elem.textContent;
+                    if (raw && raw !== "Loading ..." && raw !== "Loading..." && raw !== "") {
+                        if (raw !== state.radioTitle) {
+                            state.radioTitle = raw;
+                            // Parse artist - title jika ada
+                            let artist = "Radio Suara Mekarindah";
+                            let title = raw;
+                            if (raw.includes(" - ")) {
+                                const parts = raw.split(" - ");
+                                artist = parts[0].trim();
+                                title = parts.slice(1).join(" - ").trim();
+                            }
+                            state.radioArtist = artist;
+                            state.radioTitle = title;
+                            
+                            // --- TAMBAHAN: Cek cover berdasarkan reciter ---
+                            let coverFromReciter = getReciterCover(state.radioArtist) || getReciterCover(state.radioTitle);
+                            if (coverFromReciter) {
+                                state.radioCover = coverFromReciter;
+                            } else {
+                                // Jika tidak cocok dengan reciter, pakai default radio
+                                state.radioCover = DEFAULT_RADIO_COVER;
+                            }
+                            
+                            updateRadioUI();
+                        }
+                    }
+                }
+            }, 3000);
+        }
+        
+        function updateRadioUI() {
+            if (state.mode !== 'radio') return;
+            // Tampilkan judul lagu di area surah name dan arabic
+            setText('surahName', state.radioTitle);
+            setText('surahArabic', state.radioArtist);
+            setText('ayahInfo', 'Live Streaming 24 Jam');
+            setText('runningArabic', state.radioTitle);
+            setText('runningTranslation', state.radioArtist);
+            setText('runningAyahBadge', 'LIVE');
+            setText('qariName', '🔥 LIVE RADIO');
+            
+            // Ganti cover art dengan cover hasil deteksi reciter (atau default)
+            const coverImg = $('coverArt');
+            if (coverImg && coverImg.src !== state.radioCover) {
+                coverImg.src = state.radioCover;
+            }
+        }
+        
+        // ============================================
+        // API FUNCTIONS (QURAN)
+        // ============================================
+        async function loadSurahs() {
+            try {
+                const response = await fetch(`${API_BASE}/surah`);
+                if (!response.ok) throw new Error('Network error');
+                const data = await response.json();
+                state.surahs = data.data || [];
+            } catch (error) {
+                console.error('Error loading surahs:', error);
+                showToast('Gagal memuat daftar surah', 'error');
+            }
+        }
+        
+        async function loadSurah(surahNumber, autoPlay = false) {
+            if (state.isLoading) return false;
+            
+            if (state.surahCache[surahNumber]) {
+                state.currentSurah = state.surahCache[surahNumber];
+                state.ayahs = state.currentSurah.verses || [];
+                state.currentAyah = 1;
+                updateUI();
+                prepareAudio();
+                if (autoPlay) playAudio();
+                return true;
+            }
+            
+            state.isLoading = true;
+            state.pendingPlay = autoPlay;
+            
+            try {
+                const response = await fetch(`${API_BASE}/surah/${surahNumber}`);
+                if (!response.ok) throw new Error('Network error');
+                const data = await response.json();
+                if (!data.data) throw new Error('Invalid data');
+                
+                state.surahCache[surahNumber] = data.data;
+                state.currentSurah = data.data;
+                state.ayahs = data.data.verses || [];
+                state.currentAyah = 1;
+                
+                updateUI();
+                prepareAudio();
+                
+                if (state.pendingPlay) playAudio();
+                return true;
+                
+            } catch (error) {
+                console.error('Error loading surah:', error);
+                showToast('Gagal memuat surah', 'error');
+                return false;
+            } finally {
+                state.isLoading = false;
+                state.pendingPlay = false;
+            }
+        }
+        
+        // ============================================
+        // UI UPDATE (MUROTTAL MODE)
+        // ============================================
+        function updateUI() {
+            if (!state.currentSurah) return;
+            setText('surahName', state.currentSurah.name.transliteration.id);
+            setText('surahArabic', state.currentSurah.name.short);
+            setText('currentAyahNum', state.currentAyah);
+            setText('totalAyah', state.currentSurah.numberOfVerses);
+            setText('qariName', 'Mishary Rashid Alafasy');
+            updateRunningText();
+        }
+        
+        function updateRunningText() {
+            if (!state.currentSurah || !state.ayahs || state.ayahs.length === 0) return;
+            const ayahData = state.ayahs[state.currentAyah - 1];
+            if (!ayahData) return;
+            setText('runningArabic', ayahData.text.arab);
+            setText('runningTranslation', ayahData.translation.id);
+            setText('runningAyahBadge', `${state.currentSurah.number}:${state.currentAyah}`);
+        }
+        
+        function updateAnimations() {
+            toggleClass('visualizer', 'playing', state.isPlaying);
+            toggleClass('runningArabic', 'playing', state.isPlaying);
+            toggleClass('runningTranslation', 'playing', state.isPlaying);
+            toggleClass('coverArt', 'playing', state.isPlaying);
+            const playIcon = $('playIcon');
+            if (playIcon) playIcon.className = state.isPlaying ? 'fas fa-pause' : 'fas fa-play';
+        }
+        
+        // ============================================
+        // AUDIO FUNCTIONS (MUROTTAL)
+        // ============================================
+        function getAbsoluteAyahNumber(surahNumber, ayahNumber) {
+            let total = 0;
+            for (let i = 0; i < surahNumber - 1; i++) {
+                total += SURAH_VERSE_COUNTS[i];
+            }
+            return total + ayahNumber;
+        }
+        
+        function prepareAudio() {
+            if (!state.currentSurah || state.mode !== 'ayah') return;
+            const absoluteAyah = getAbsoluteAyahNumber(state.currentSurah.number, state.currentAyah);
+            const audioUrl = `${AUDIO_BASE}/${absoluteAyah}.mp3`;
+            const audioPlayer = $('audioPlayer');
+            if (audioPlayer) {
+                audioPlayer.src = audioUrl;
+                audioPlayer.load();
+            }
+        }
+        
+        function playAudio() {
+            const audioPlayer = $('audioPlayer');
+            if (!audioPlayer) return;
+            if (state.mode === 'radio') {
+                // Jika mode radio, stream sudah di-set saat switchMode
+                if (!audioPlayer.src || audioPlayer.src !== RADIO_STREAM_URL) {
+                    audioPlayer.src = RADIO_STREAM_URL;
+                }
+            } else {
+                if (!audioPlayer.src || audioPlayer.src === location.href) {
+                    prepareAudio();
+                }
+            }
+            const playPromise = audioPlayer.play();
+            if (playPromise !== undefined) {
+                playPromise.then(() => {
+                    state.isPlaying = true;
+                    updateAnimations();
+                }).catch(error => {
+                    console.log('Play error:', error.message);
+                });
+            }
+        }
+        
+        function setupAudioEvents() {
+            const audioPlayer = $('audioPlayer');
+            if (!audioPlayer) return;
+            
+            audioPlayer.addEventListener('canplaythrough', () => {
+                if (state.pendingPlay) {
+                    playAudio();
+                    state.pendingPlay = false;
+                }
+            });
+            
+            audioPlayer.addEventListener('timeupdate', () => {
+                const progressFill = $('progressFill');
+                const currentTimeEl = $('currentTime');
+                const durationEl = $('duration');
+                
+                if (state.mode === 'radio') {
+                    if (progressFill) progressFill.style.width = '100%';
+                    if (currentTimeEl) currentTimeEl.textContent = 'LIVE';
+                    if (durationEl) durationEl.textContent = '∞';
+                } else {
+                    const curr = audioPlayer.currentTime;
+                    const dur = audioPlayer.duration || 0;
+                    if (progressFill) progressFill.style.width = `${dur ? (curr/dur)*100 : 0}%`;
+                    if (currentTimeEl) currentTimeEl.textContent = formatTime(curr);
+                    if (durationEl) durationEl.textContent = formatTime(dur);
+                }
+            });
+            
+            audioPlayer.addEventListener('ended', () => {
+                if (state.mode === 'radio') return;
+                if (state.repeat) {
+                    audioPlayer.currentTime = 0;
+                    audioPlayer.play();
+                } else if (state.autoPlay) {
+                    nextAyah();
+                } else {
+                    state.isPlaying = false;
+                    updateAnimations();
+                }
+            });
+            
+            audioPlayer.addEventListener('error', (e) => {
+                console.error('Audio error:', e);
+                state.isPlaying = false;
+                updateAnimations();
+                if (state.mode === 'radio') {
+                    showToast('Stream radio terputus, mencoba menyambung...', 'error');
+                    setTimeout(() => {
+                        if (state.mode === 'radio' && state.isPlaying) {
+                            audioPlayer.src = RADIO_STREAM_URL;
+                            audioPlayer.play().catch(()=>{});
+                        }
+                    }, 5000);
+                }
+            });
+            
+            audioPlayer.addEventListener('play', () => {
+                state.isPlaying = true;
+                updateAnimations();
+            });
+            
+            audioPlayer.addEventListener('pause', () => {
+                state.isPlaying = false;
+                updateAnimations();
+            });
+        }
+        
+        function formatTime(sec) {
+            if (isNaN(sec)) return '0:00';
+            const m = Math.floor(sec / 60);
+            const s = Math.floor(sec % 60);
+            return `${m}:${s.toString().padStart(2, '0')}`;
+        }
+        
+        // ============================================
+        // PLAYER CONTROLS
+        // ============================================
+        function togglePlay() {
+            const audioPlayer = $('audioPlayer');
+            if (!audioPlayer) return;
+            if (state.isPlaying) {
+                audioPlayer.pause();
+            } else {
+                playAudio();
+            }
+        }
+        
+        function playAyah(num) {
+            if (state.mode === 'radio') switchMode('ayah');
+            state.currentAyah = num;
+            updateUI();
+            prepareAudio();
+            setTimeout(playAudio, 100);
+        }
+        
+        function nextAyah() {
+            if (state.mode === 'radio' || !state.currentSurah) return;
+            if (state.currentAyah < state.currentSurah.numberOfVerses) {
+                state.currentAyah++;
+                updateUI();
+                prepareAudio();
+                if (state.isPlaying || state.autoPlay) setTimeout(playAudio, 100);
+            } else if (state.currentSurah.number < 114) {
+                loadSurah(state.currentSurah.number + 1, state.isPlaying || state.autoPlay);
+            } else {
+                showToast('Akhir Al-Qur\'an', 'info');
+                state.isPlaying = false;
+                updateAnimations();
+            }
+        }
+        
+        function prevAyah() {
+            if (state.mode === 'radio' || !state.currentSurah) return;
+            if (state.currentAyah > 1) {
+                state.currentAyah--;
+                updateUI();
+                prepareAudio();
+                if (state.isPlaying) setTimeout(playAudio, 100);
+            } else if (state.currentSurah.number > 1) {
+                const wasPlaying = state.isPlaying;
+                loadSurah(state.currentSurah.number - 1, false).then(() => {
+                    if (state.currentSurah) {
+                        state.currentAyah = state.currentSurah.numberOfVerses;
+                        updateUI();
+                        prepareAudio();
+                        if (wasPlaying) setTimeout(playAudio, 100);
+                    }
+                });
+            }
+        }
+        
+        function rewind() {
+            if (state.mode === 'radio') return;
+            const audioPlayer = $('audioPlayer');
+            if (audioPlayer) audioPlayer.currentTime = Math.max(0, audioPlayer.currentTime - 10);
+        }
+        
+        function forward() {
+            if (state.mode === 'radio') return;
+            const audioPlayer = $('audioPlayer');
+            if (audioPlayer) audioPlayer.currentTime = Math.min(audioPlayer.duration || 0, audioPlayer.currentTime + 10);
+        }
+        
+        function seekAudio(e) {
+            if (state.mode === 'radio') return;
+            const bar = $('progressBar');
+            const audioPlayer = $('audioPlayer');
+            if (!bar || !audioPlayer || !audioPlayer.duration) return;
+            const rect = bar.getBoundingClientRect();
+            const percent = (e.clientX - rect.left) / rect.width;
+            audioPlayer.currentTime = percent * audioPlayer.duration;
+        }
+        
+        function changeVolume(val) {
+            state.volume = val / 100;
+            const audioPlayer = $('audioPlayer');
+            if (audioPlayer) audioPlayer.volume = state.volume;
+            state.isMuted = false;
+            updateVolumeIcon();
+        }
+        
+        function toggleMute() {
+            state.isMuted = !state.isMuted;
+            const audioPlayer = $('audioPlayer');
+            if (audioPlayer) audioPlayer.muted = state.isMuted;
+            updateVolumeIcon();
+        }
+        
+        function updateVolumeIcon() {
+            const icon = $('volumeIcon');
+            if (!icon) return;
+            if (state.isMuted || state.volume === 0) icon.className = 'fas fa-volume-mute';
+            else if (state.volume < 0.5) icon.className = 'fas fa-volume-down';
+            else icon.className = 'fas fa-volume-up';
+        }
+        
+        function toggleAutoPlay() {
+            state.autoPlay = !state.autoPlay;
+            toggleClass('autoPlayBtn', 'active', state.autoPlay);
+            showToast(state.autoPlay ? 'Auto-play aktif' : 'Auto-play nonaktif', 'info');
+        }
+        
+        function toggleRepeat() {
+            state.repeat = !state.repeat;
+            toggleClass('repeatBtn', 'active', state.repeat);
+            showToast(state.repeat ? 'Ulangi aktif' : 'Ulangi nonaktif', 'info');
+        }
+        
+        // ============================================
+        // MODE SWITCHING (MUROTTAL / RADIO)
+        // ============================================
+        function switchMode(mode) {
+            if (state.mode === mode) return;
+            const audioPlayer = $('audioPlayer');
+            if (audioPlayer) {
+                audioPlayer.pause();
+                audioPlayer.currentTime = 0;
+                audioPlayer.src = '';
+            }
+            state.isPlaying = false;
+            state.mode = mode;
+            
+            toggleClass('ayahModeBtn', 'active', mode === 'ayah');
+            toggleClass('radioModeBtn', 'active', mode === 'radio');
+            toggleClass('radioStatus', 'active', mode === 'radio');
+            
+            const prevBtn = $('prevBtn');
+            const nextBtn = $('nextBtn');
+            if (prevBtn) prevBtn.disabled = (mode === 'radio');
+            if (nextBtn) nextBtn.disabled = (mode === 'radio');
+            
+            if (mode === 'radio') {
+                // Pastikan cover radio sesuai dengan metadata terakhir (termasuk reciter)
+                let coverFromReciter = getReciterCover(state.radioArtist) || getReciterCover(state.radioTitle);
+                if (coverFromReciter) {
+                    state.radioCover = coverFromReciter;
+                } else {
+                    state.radioCover = DEFAULT_RADIO_COVER;
+                }
+                updateRadioUI();
+                // Set stream radio
+                if (audioPlayer) audioPlayer.src = RADIO_STREAM_URL;
+                showToast('Mode Radio Suara Mekarindah', 'info');
+                // Mulai putar jika sebelumnya tidak ada
+                if (state.isPlaying) {
+                    setTimeout(() => playAudio(), 100);
+                }
+            } else {
+                // Mode murottal: restore terakhir
+                if (state.currentSurah && state.ayahs.length > 0) {
+                    updateUI();
+                    prepareAudio();
+                } else {
+                    loadSurah(1, false);
+                }
+                showToast('Mode Murottal aktif', 'info');
+            }
+            updateAnimations();
+        }
+        
+        // ============================================
+        // MODAL FUNCTIONS
+        // ============================================
+        function openSurahModal() {
+            if (state.mode === 'radio') {
+                showToast('Nonaktifkan mode radio dulu untuk memilih surah', 'info');
+                return;
+            }
+            addClass('surahModal', 'active');
+            const searchInput = $('surahSearch');
+            if (searchInput) searchInput.value = '';
+            renderSurahList();
+        }
+        
+        function closeSurahModal() { removeClass('surahModal', 'active'); }
+        
+        function openAyahModal() {
+            if (!state.currentSurah) { showToast('Pilih surah terlebih dahulu', 'info'); return; }
+            if (state.mode === 'radio') { showToast('Pilih mode Murottal dulu', 'info'); return; }
+            addClass('ayahModal', 'active');
+            setHTML('ayahModalTitle', `<i class="fas fa-list-ol"></i> Pilih Ayat - ${state.currentSurah.name.transliteration.id}`);
+            let gridHTML = '';
+            for (let i = 1; i <= state.currentSurah.numberOfVerses; i++) {
+                const isCurrent = (i === state.currentAyah) ? 'current' : '';
+                gridHTML += `<div class="ayah-grid-item ${isCurrent}" onclick="selectAyah(${i})">${i}</div>`;
+            }
+            setHTML('ayahGrid', gridHTML);
+        }
+        
+        function closeAyahModal() { removeClass('ayahModal', 'active'); }
+        
+        function selectAyah(num) { closeAyahModal(); playAyah(num); }
+        
+        function switchModalTab(tab) {
+            state.modalTab = tab;
+            toggleClass('surahTabBtn', 'active', tab === 'surah');
+            toggleClass('juzTabBtn', 'active', tab === 'juz');
+            renderSurahList();
+        }
+        
+        function renderSurahList() {
+            const container = $('surahList');
+            const searchInput = $('surahSearch');
+            if (!container) return;
+            const search = searchInput ? searchInput.value.toLowerCase() : '';
+            if (state.modalTab === 'surah') {
+                const filtered = state.surahs.filter(s => s.name.transliteration.id.toLowerCase().includes(search) || s.name.translation.id.toLowerCase().includes(search) || s.number.toString().includes(search));
+                if (filtered.length === 0) { container.innerHTML = '<p style="text-align:center;color:var(--text-muted);padding:40px;">Tidak ditemukan</p>'; return; }
+                let html = '';
+                filtered.forEach(s => {
+                    const isActive = (state.currentSurah && state.currentSurah.number === s.number) ? 'active' : '';
+                    html += `<div class="surah-list-item ${isActive}" onclick="selectSurah(${s.number})">
+                                <span class="surah-list-number">${s.number}</span>
+                                <span class="surah-list-info">
+                                    <span class="surah-list-name">${s.name.transliteration.id}</span>
+                                    <span class="surah-list-meta">${s.numberOfVerses} Ayat • ${s.revelation.id}</span>
+                                </span>
+                                <span class="surah-list-arabic">${s.name.short}</span>
+                            </div>`;
+                });
+                container.innerHTML = html;
+            } else {
+                let html = '';
+                JUZ_MAPPING.forEach(j => {
+                    html += `<div class="surah-list-item" onclick="selectJuz(${j.juz})">
+                                <span class="surah-list-number">${j.juz}</span>
+                                <span class="surah-list-info">
+                                    <span class="surah-list-name">Juz ${j.juz}</span>
+                                    <span class="surah-list-meta">${j.start.surah}:${j.start.ayah} - ${j.end.surah}:${j.end.ayah}</span>
+                                </span>
+                            </div>`;
+                });
+                container.innerHTML = html;
+            }
+        }
+        
+        function filterSurahs() { renderSurahList(); }
+        
+        function selectSurah(num) {
+            closeSurahModal();
+            if (state.mode === 'radio') switchMode('ayah');
+            loadSurah(num, true);
+        }
+        
+        function selectJuz(juzNum) {
+            closeSurahModal();
+            if (state.mode === 'radio') switchMode('ayah');
+            const juz = JUZ_MAPPING.find(j => j.juz === juzNum);
+            if (!juz) return;
+            loadSurah(juz.start.surah, true).then(() => {
+                state.currentAyah = juz.start.ayah;
+                updateUI();
+                prepareAudio();
+                setTimeout(playAudio, 100);
+                showToast('Juz ' + juzNum + ' dimuat', 'success');
+            });
+        }
+        
+        document.addEventListener('click', function(e) {
+            if (e.target.id === 'surahModal') closeSurahModal();
+            if (e.target.id === 'ayahModal') closeAyahModal();
+        });
+        
+        // ============================================
+        // TOAST
+        // ============================================
+        function showToast(msg, type) {
+            type = type || 'info';
+            const container = $('toastContainer');
+            if (!container) return;
+            const toast = document.createElement('div');
+            toast.className = 'toast ' + type;
+            let icon = 'info-circle';
+            if (type === 'success') icon = 'check-circle';
+            if (type === 'error') icon = 'exclamation-circle';
+            toast.innerHTML = `<i class="fas fa-${icon}"></i><span>${msg}</span>`;
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.style.animation = 'toastSlide 0.3s ease reverse forwards';
+                setTimeout(() => { if (toast.parentNode) toast.parentNode.removeChild(toast); }, 300);
+            }, 3000);
+        }
+        
+        // ============================================
+        // KEYBOARD SHORTCUTS
+        // ============================================
+        document.addEventListener('keydown', function(e) {
+            if (document.activeElement.tagName === 'INPUT') return;
+            switch(e.code) {
+                case 'Space': e.preventDefault(); togglePlay(); break;
+                case 'ArrowRight': if (state.mode === 'ayah') nextAyah(); break;
+                case 'ArrowLeft': if (state.mode === 'ayah') prevAyah(); break;
+                case 'ArrowUp': e.preventDefault(); changeVolume(Math.min(100, state.volume * 100 + 10)); const vs = $('volumeSlider'); if(vs) vs.value = state.volume * 100; break;
+                case 'ArrowDown': e.preventDefault(); changeVolume(Math.max(0, state.volume * 100 - 10)); const vs2 = $('volumeSlider'); if(vs2) vs2.value = state.volume * 100; break;
+                case 'KeyM': toggleMute(); break;
+                case 'KeyR': toggleRepeat(); break;
+            }
+        });
+    </script>
+</body>
+</html>
