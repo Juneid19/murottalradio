@@ -233,11 +233,13 @@
             'default_radio': 'https://mekarindah.netlify.app/img/default.jpg'
         };
 
-        const CONFIG = {
-            API_BASE: 'https://api.alquran.cloud/v1',
-            RADIO_URL: 'https://eu1.fastcast4u.com/proxy/kiarafm?mp=/1',
-            RADIO_META: 'https://eu1.fastcast4u.com/rpc/kiarafm/streaminfo.get'
-        };
+    const CONFIG = {
+    API_BASE: 'https://api.alquran.cloud/v1',
+    RADIO_URL: 'https://eu1.fastcast4u.com/proxy/kiarafm?mp=/1',
+    // Gunakan URL JSON status dari provider
+    RADIO_META: 'https://eu1.fastcast4u.com/rpc/kiarafm/streaminfo.get' 
+};
+
 
         let state = { mode: 'ayah', isPlaying: false, currentSurah: null, currentIndex: 0, eventSource: null };
         const audioPlayer = document.getElementById('audioPlayer');
@@ -295,26 +297,31 @@
         }
 
         function switchMode(m) {
-            state.mode = m;
-            pauseAudio();
-            if(state.eventSource) state.eventSource.close();
-            document.getElementById('modeAyah').classList.toggle('active', m === 'ayah');
-            document.getElementById('modeRadio').classList.toggle('active', m === 'radio');
-            document.getElementById('appMain').className = 'app-container ' + (m === 'radio' ? 'radio-active' : '');
-            document.body.className = 'mode-' + m;
+    state.mode = m;
+    pauseAudio();
+    
+    // Hentikan interval radio jika pindah ke murottal
+    if(radioInterval) clearInterval(radioInterval);
+    if(state.eventSource) state.eventSource.close(); 
 
-            if(m === 'radio') {
-                statusText.innerText = "Streaming Aktif...";
-                trackTitle.innerText = "Mekarindah Radio";
-                reciterText.innerText = "Live Streaming";
-                coverArt.src = RECITER_COVERS['default_radio'];
-                audioPlayer.src = CONFIG.RADIO_URL;
-                setupRadioMetadata();
-                playAudio();
-            } else {
-                loadSurah(state.currentSurah?.number || 1, false);
-            }
-        }
+    document.getElementById('modeAyah').classList.toggle('active', m === 'ayah');
+    document.getElementById('modeRadio').classList.toggle('active', m === 'radio');
+    document.getElementById('appMain').className = 'app-container ' + (m === 'radio' ? 'radio-active' : '');
+    document.body.className = 'mode-' + m;
+
+    if(m === 'radio') {
+        statusText.innerText = "Menghubungkan...";
+        trackTitle.innerText = "Mekarindah Radio";
+        reciterText.innerText = "Live Streaming";
+        coverArt.src = RECITER_COVERS['default_radio'];
+        audioPlayer.src = CONFIG.RADIO_URL;
+        setupRadioMetadata(); // Jalankan polling
+        playAudio();
+    } else {
+        loadSurah(state.currentSurah?.number || 1, false);
+    }
+}
+
 
         function findArtistCover(name) {
             const lowerName = name.toLowerCase();
@@ -322,20 +329,49 @@
             return RECITER_COVERS['default_radio'];
         }
 
-        function setupRadioMetadata() {
-            state.eventSource = new EventSource(CONFIG.RADIO_META);
-            state.eventSource.onmessage = (e) => {
-                const data = JSON.parse(e.data);
-                if(data.streamTitle) {
-                    statusText.innerText = "Suara Masjid Mekarindah";
-                    const info = data.streamTitle.split(' - ');
-                    const artist = info[0] || "Mekarindah Radio";
-                    reciterText.innerText = artist;
-                    trackTitle.innerText = info[1] || "Streaming";
-                    coverArt.src = findArtistCover(artist);
-                }
-            };
+        let radioInterval = null; // Tambahkan ini di bagian deklarasi state
+
+function setupRadioMetadata() {
+    // Bersihkan interval jika sebelumnya sudah ada
+    if(radioInterval) clearInterval(radioInterval);
+
+    const updateMeta = async () => {
+        if(state.mode !== 'radio') return;
+        
+        try {
+            // Kita gunakan fetch biasa karena endpoint tersebut mengembalikan JSON
+            const response = await fetch(CONFIG.RADIO_META);
+            const data = await response.json();
+            
+            // Mengambil info dari properti 'getPropertyResponse' (Struktur umum FastCast4u)
+            // Jika struktur JSON berbeda, sesuaikan navigasi objeknya
+            if(data && data.return && data.return[0]) {
+                const info = data.return[0];
+                const fullTitle = info.title || "Mekarindah Radio - Live";
+                
+                // Pisahkan artis dan judul (biasanya dipisah tanda strip '-')
+                const parts = fullTitle.split(' - ');
+                const artist = parts[0] ? parts[0].trim() : "Mekarindah";
+                const song = parts[1] ? parts[1].trim() : "Streaming";
+
+                // Update UI
+                trackTitle.innerText = song;
+                reciterText.innerText = artist;
+                
+                // Update Cover berdasarkan nama artis/reciter
+                coverArt.src = findArtistCover(artist);
+                statusText.innerText = "Sedang Memutar: " + artist;
+            }
+        } catch (e) {
+            console.error("Gagal mengambil metadata radio", e);
         }
+    };
+
+    // Jalankan segera dan ulangi setiap 10 detik
+    updateMeta();
+    radioInterval = setInterval(updateMeta, 10000);
+}
+
 
         function togglePlay() { if(state.isPlaying) pauseAudio(); else playAudio(); }
         function playAudio() { audioPlayer.play().then(() => { state.isPlaying = true; updateUI(); }); }
