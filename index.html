@@ -1,0 +1,3347 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+      content="width=device-width,
+               initial-scale=1.0,
+               maximum-scale=1.0,
+               user-scalable=no">
+
+<title>Murottal Qur'an & Radio Mekarindah</title>
+
+
+<!-- =========================================================
+     FONT
+========================================================= -->
+
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Poppins:wght@300;400;600&display=swap"
+      rel="stylesheet">
+
+
+<!-- =========================================================
+     FONT AWESOME
+========================================================= -->
+
+<link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+
+<style>
+
+/* =========================================================
+   ROOT
+========================================================= */
+
+:root {
+
+    --primary:#10b981;
+
+    --secondary:#0f172a;
+
+    --accent:#f59e0b;
+
+    --text-light:#f1f5f9;
+
+    --text-muted:#94a3b8;
+
+    --bg-gradient:
+        linear-gradient(
+            135deg,
+            #022c22 0%,
+            #0f172a 100%
+        );
+
+    --glass:
+        rgba(15,23,42,0.92);
+
+    --glass-border:
+        rgba(255,255,255,0.1);
+}
+
+
+/* =========================================================
+   RESET
+========================================================= */
+
+* {
+
+    box-sizing:border-box;
+
+    margin:0;
+
+    padding:0;
+
+    -webkit-tap-highlight-color:transparent;
+
+    scrollbar-width:thin;
+
+    scrollbar-color:
+        var(--primary)
+        var(--secondary);
+}
+
+
+/* =========================================================
+   BODY
+========================================================= */
+
+body {
+
+    font-family:'Poppins',sans-serif;
+
+    background:
+        var(--bg-gradient);
+
+    color:
+        var(--text-light);
+
+    height:
+        100dvh;
+
+    overflow:
+        hidden;
+
+    display:
+        flex;
+
+    justify-content:
+        center;
+
+    align-items:
+        center;
+}
+
+
+/* =========================================================
+   APP
+========================================================= */
+
+.app-container {
+
+    width:
+        100%;
+
+    max-width:
+        800px;
+
+    height:
+        100dvh;
+
+    display:
+        flex;
+
+    flex-direction:
+        column;
+
+    background:
+        var(--glass);
+
+    backdrop-filter:
+        blur(10px);
+
+    box-shadow:
+        0 0 50px rgba(0,0,0,0.5);
+
+    position:
+        relative;
+}
+
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+header {
+
+    padding:
+        30px 20px 15px;
+
+    border-bottom:
+        1px solid var(--glass-border);
+
+    display:
+        flex;
+
+    justify-content:
+        space-between;
+
+    align-items:
+        center;
+
+    z-index:
+        10;
+
+    background:
+        rgba(15,23,42,0.65);
+}
+
+
+.logo {
+
+    font-weight:
+        600;
+
+    font-size:
+        1.1rem;
+
+    color:
+        var(--primary);
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    gap:
+        10px;
+}
+
+
+/* =========================================================
+   MODE SWITCH
+========================================================= */
+
+.mode-switch {
+
+    display:
+        flex;
+
+    background:
+        rgba(255,255,255,0.08);
+
+    padding:
+        4px;
+
+    border-radius:
+        20px;
+}
+
+
+.mode-btn {
+
+    background:
+        none;
+
+    border:
+        none;
+
+    color:
+        var(--text-muted);
+
+    padding:
+        8px 16px;
+
+    font-size:
+        0.85rem;
+
+    cursor:
+        pointer;
+
+    border-radius:
+        16px;
+
+    transition:
+        0.3s;
+}
+
+
+.mode-btn.active {
+
+    background:
+        var(--primary);
+
+    color:
+        white;
+
+    font-weight:
+        600;
+}
+
+
+/* =========================================================
+   PLAYER CARD
+========================================================= */
+
+.player-card {
+
+    padding:
+        15px 20px;
+
+    text-align:
+        center;
+
+    background:
+        linear-gradient(
+            to bottom,
+            rgba(0,0,0,0.45),
+            transparent
+        );
+
+    flex-shrink:
+        0;
+}
+
+
+/* =========================================================
+   COVER
+========================================================= */
+
+.cover-art-container {
+
+    width:
+        100px;
+
+    height:
+        100px;
+
+    margin:
+        0 auto 10px;
+
+    position:
+        relative;
+}
+
+
+.cover-art {
+
+    width:
+        100%;
+
+    height:
+        100%;
+
+    object-fit:
+        cover;
+
+    border-radius:
+        50%;
+
+    border:
+        3px solid var(--accent);
+
+    box-shadow:
+        0 0 25px
+        rgba(245,158,11,0.25);
+}
+
+
+.cover-art.spinning {
+
+    animation:
+        spin 10s linear infinite;
+}
+
+
+@keyframes spin {
+
+    100% {
+
+        transform:
+            rotate(360deg);
+
+    }
+
+}
+
+
+/* =========================================================
+   TRACK
+========================================================= */
+
+.track-info h2 {
+
+    font-size:
+        1.1rem;
+
+    margin-bottom:
+        4px;
+
+    color:
+        var(--accent);
+
+    letter-spacing:
+        0.4px;
+}
+
+
+.track-info p {
+
+    font-size:
+        0.85rem;
+
+    color:
+        var(--text-muted);
+}
+
+
+/* =========================================================
+   CONTROLS
+========================================================= */
+
+.controls-wrapper {
+
+    margin-top:
+        10px;
+
+    display:
+        flex;
+
+    flex-direction:
+        column;
+
+    align-items:
+        center;
+}
+
+
+/* =========================================================
+   SELECT
+========================================================= */
+
+.surah-select {
+
+    background:
+        #1e293b;
+
+    color:
+        white;
+
+    border:
+        1px solid #334155;
+
+    padding:
+        10px 15px;
+
+    border-radius:
+        8px;
+
+    width:
+        100%;
+
+    max-width:
+        380px;
+
+    margin-bottom:
+        10px;
+
+    font-family:
+        'Poppins',sans-serif;
+
+    font-size:
+        0.9rem;
+
+    outline:
+        none;
+
+    cursor:
+        pointer;
+}
+
+
+.reciter-select {
+
+    border:
+        1px solid
+        rgba(16,185,129,0.45);
+}
+
+
+/* =========================================================
+   CONTROLS
+========================================================= */
+
+.player-controls {
+
+    display:
+        flex;
+
+    justify-content:
+        center;
+
+    align-items:
+        center;
+
+    gap:
+        25px;
+
+    margin:
+        5px 0 15px;
+}
+
+
+.btn-ctrl {
+
+    background:
+        none;
+
+    border:
+        none;
+
+    color:
+        var(--text-light);
+
+    font-size:
+        1.3rem;
+
+    cursor:
+        pointer;
+
+    width:
+        45px;
+
+    height:
+        45px;
+
+    display:
+        flex;
+
+    justify-content:
+        center;
+
+    align-items:
+        center;
+
+    border-radius:
+        50%;
+}
+
+
+.btn-ctrl:hover {
+
+    color:
+        var(--primary);
+
+    background:
+        rgba(255,255,255,0.05);
+}
+
+
+.btn-play {
+
+    width:
+        55px;
+
+    height:
+        55px;
+
+    background:
+        var(--primary);
+
+    color:
+        white;
+
+    font-size:
+        1.6rem;
+
+    box-shadow:
+        0 0 15px
+        rgba(16,185,129,0.4);
+}
+
+
+/* =========================================================
+   VOLUME
+========================================================= */
+
+.volume-container {
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    gap:
+        12px;
+
+    font-size:
+        0.8rem;
+
+    color:
+        var(--text-muted);
+
+    background:
+        rgba(255,255,255,0.03);
+
+    padding:
+        5px 15px;
+
+    border-radius:
+        20px;
+}
+
+
+input[type=range] {
+
+    width:
+        100px;
+
+    accent-color:
+        var(--primary);
+}
+
+
+/* =========================================================
+   QURAN
+========================================================= */
+
+.quran-container {
+
+    flex-grow:
+        1;
+
+    overflow-y:
+        auto;
+
+    padding:
+        10px 20px 80px;
+
+    background:
+        rgba(0,0,0,0.2);
+
+    scroll-behavior:
+        smooth;
+}
+
+
+.ayah-item {
+
+    padding:
+        20px 15px;
+
+    border-bottom:
+        1px solid
+        rgba(255,255,255,0.05);
+
+    border-radius:
+        8px;
+
+    margin-bottom:
+        8px;
+
+    cursor:
+        pointer;
+
+    transition:
+        0.3s;
+}
+
+
+.ayah-item:hover {
+
+    background:
+        rgba(255,255,255,0.03);
+}
+
+
+.ayah-item.active {
+
+    background:
+        rgba(16,185,129,0.1);
+
+    border-left:
+        3px solid
+        var(--primary);
+}
+
+
+.ayah-header {
+
+    display:
+        flex;
+
+    justify-content:
+        space-between;
+
+    margin-bottom:
+        8px;
+
+    font-size:
+        0.75rem;
+
+    color:
+        var(--accent);
+
+    text-transform:
+        uppercase;
+
+    letter-spacing:
+        1px;
+}
+
+
+.arabic-text {
+
+    font-family:
+        'Amiri',serif;
+
+    font-size:
+        1.6rem;
+
+    text-align:
+        right;
+
+    line-height:
+        2.4;
+
+    margin-bottom:
+        12px;
+
+    color:
+        white;
+}
+
+
+.translation-text {
+
+    font-size:
+        0.9rem;
+
+    color:
+        var(--text-muted);
+
+    line-height:
+        1.6;
+}
+
+
+/* =========================================================
+   RADIO
+========================================================= */
+
+.radio-visualizer {
+
+    display:
+        none;
+
+    text-align:
+        center;
+
+    padding:
+        60px 20px;
+
+    color:
+        var(--accent);
+}
+
+
+.radio-active .radio-visualizer {
+
+    display:
+        block;
+}
+
+
+.radio-active .quran-container {
+
+    display:
+        none;
+}
+
+
+.radio-active .reciter-select,
+.radio-active .surah-select {
+
+    opacity:
+        0.5;
+
+    pointer-events:
+        none;
+}
+
+
+.radio-active .btn-skip {
+
+    opacity:
+        0.3;
+
+    pointer-events:
+        none;
+}
+
+
+/* =========================================================
+   RADIO NOW PLAYING
+========================================================= */
+
+.radio-now-playing {
+
+    font-size:
+        0.75rem;
+
+    color:
+        var(--primary);
+
+    margin-top:
+        8px;
+
+    padding:
+        4px 12px;
+
+    background:
+        rgba(16,185,129,0.15);
+
+    border-radius:
+        20px;
+
+    display:
+        inline-block;
+}
+
+
+/* =========================================================
+   LOADER
+========================================================= */
+
+.loader-overlay {
+
+    position:
+        absolute;
+
+    inset:
+        0;
+
+    background:
+        rgba(15,23,42,0.82);
+
+    z-index:
+        50;
+
+    display:
+        none;
+
+    flex-direction:
+        column;
+
+    justify-content:
+        center;
+
+    align-items:
+        center;
+}
+
+
+.loader {
+
+    width:
+        40px;
+
+    height:
+        40px;
+
+    border:
+        4px solid
+        rgba(255,255,255,0.1);
+
+    border-top:
+        4px solid
+        var(--primary);
+
+    border-radius:
+        50%;
+
+    animation:
+        spin 0.8s linear infinite;
+}
+
+
+.loader-text {
+
+    margin-top:
+        15px;
+
+    font-size:
+        0.9rem;
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media(max-width:600px) {
+
+    header {
+
+        padding-top:
+            35px;
+
+    }
+
+
+    .player-card {
+
+        padding:
+            10px 15px;
+
+    }
+
+
+    .cover-art-container {
+
+        width:
+            90px;
+
+        height:
+            90px;
+
+    }
+
+
+    .arabic-text {
+
+        font-size:
+            1.4rem;
+
+    }
+
+
+    .player-controls {
+
+        gap:
+            18px;
+
+    }
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<div class="app-container">
+
+
+<!-- =========================================================
+     HEADER
+========================================================= -->
+
+<header>
+
+    <div class="logo">
+
+        <i class="fas fa-quran"></i>
+
+        Al-Mekarindah
+
+    </div>
+
+
+    <div class="mode-switch">
+
+        <button
+            class="mode-btn active"
+            id="modeAyah"
+            onclick="switchMode('ayah')">
+
+            Murottal
+
+        </button>
+
+
+        <button
+            class="mode-btn"
+            id="modeRadio"
+            onclick="switchMode('radio')">
+
+            Radio
+
+        </button>
+
+    </div>
+
+</header>
+
+
+
+<!-- =========================================================
+     PLAYER
+========================================================= -->
+
+<div class="player-card">
+
+
+    <div class="cover-art-container">
+
+        <img
+            id="coverArt"
+            class="cover-art"
+            alt="Cover Reciter">
+
+    </div>
+
+
+    <div class="track-info">
+
+        <h2 id="currentTrackTitle">
+            QS. Al-Fatihah
+        </h2>
+
+
+        <p id="currentReciter">
+            Mishary Rashid Alafasy
+        </p>
+
+
+        <div
+            id="radioNowPlaying"
+            class="radio-now-playing"
+            style="display:none;">
+
+        </div>
+
+    </div>
+
+
+
+    <div class="controls-wrapper">
+
+
+        <!-- =================================================
+             RECITER SELECT
+        ================================================== -->
+
+        <select
+            id="reciterSelect"
+            class="surah-select reciter-select"
+            onchange="handleReciterChange(this.value)">
+
+        </select>
+
+
+        <!-- =================================================
+             SURAH SELECT
+        ================================================== -->
+
+        <select
+            id="surahSelect"
+            class="surah-select"
+            onchange="handleSurahChange(this.value)">
+
+            <option value="">
+                Memuat daftar surat...
+            </option>
+
+        </select>
+
+
+
+        <!-- =================================================
+             BUTTON
+        ================================================== -->
+
+        <div class="player-controls">
+
+
+            <button
+                class="btn-ctrl btn-skip"
+                onclick="prevAyah()">
+
+                <i class="fas fa-step-backward"></i>
+
+            </button>
+
+
+            <button
+                class="btn-ctrl btn-play"
+                id="playBtn"
+                onclick="togglePlay()">
+
+                <i class="fas fa-play"></i>
+
+            </button>
+
+
+            <button
+                class="btn-ctrl btn-skip"
+                onclick="nextAyah()">
+
+                <i class="fas fa-step-forward"></i>
+
+            </button>
+
+        </div>
+
+
+
+        <!-- =================================================
+             VOLUME
+        ================================================== -->
+
+        <div class="volume-container">
+
+            <i class="fas fa-volume-down"></i>
+
+            <input
+                id="volumeSlider"
+                type="range"
+                min="0"
+                max="1"
+                step="0.05"
+                value="1"
+                oninput="setVolume(this.value)">
+
+        </div>
+
+    </div>
+
+</div>
+
+
+
+<!-- =========================================================
+     LOADER
+========================================================= -->
+
+<div
+    id="loaderOverlay"
+    class="loader-overlay">
+
+    <div class="loader"></div>
+
+    <div
+        class="loader-text"
+        id="loaderText">
+
+        Memuat...
+
+    </div>
+
+</div>
+
+
+
+<!-- =========================================================
+     QURAN
+========================================================= -->
+
+<div
+    id="quranContainer"
+    class="quran-container">
+
+    <div
+        style="
+            text-align:center;
+            padding:20px;
+            color:var(--text-muted);
+        ">
+
+        Silakan pilih surat.
+
+    </div>
+
+</div>
+
+
+
+<!-- =========================================================
+     RADIO
+========================================================= -->
+
+<div
+    id="radioMsg"
+    class="radio-visualizer">
+
+    <i
+        class="fas fa-broadcast-tower fa-3x"
+        style="
+            margin-bottom:20px;
+            color:var(--primary);
+        ">
+    </i>
+
+
+    <h3>
+        Mekarindah Radio Live
+    </h3>
+
+
+    <p>
+        Menyiarkan Murottal & Musik Islami 24 Jam Non-Stop
+    </p>
+
+
+    <p
+        id="radioStatusText"
+        style="
+            font-size:0.8rem;
+            margin-top:10px;
+            color:var(--text-muted);
+        ">
+
+        Memuat metadata...
+
+    </p>
+
+</div>
+
+
+</div>
+
+
+
+<!-- =========================================================
+     AUDIO
+========================================================= -->
+
+<audio
+    id="audioPlayer"
+    preload="auto">
+</audio>
+
+
+
+<!-- =========================================================
+     FASTCAST STREAM INFO
+========================================================= -->
+
+<div style="display:none;">
+
+    <span
+        class="cc_streaminfo"
+        data-type="song"
+        data-username="kiarafm">
+
+        Loading ...
+
+    </span>
+
+</div>
+
+
+<script src="https://eu1.fastcast4u.com/system/streaminfo.js"></script>
+
+
+
+<script>
+
+/* =========================================================
+   KONFIGURASI
+========================================================= */
+
+const API_BASE =
+    "https://api.alquran.cloud/v1";
+
+
+const RADIO_STREAM_URL =
+    "https://eu1.fastcast4u.com/proxy/kiarafm/stream";
+
+
+const DEFAULT_RADIO_COVER =
+    "https://mekarindah.netlify.app/img/default.jpg";
+
+
+/* =========================================================
+   DATABASE RECITER
+=========================================================
+
+   bitrate disesuaikan dengan edition.
+
+   Jangan semua dibuat 128 karena
+   tidak semua reciter tersedia pada 128.
+========================================================= */
+
+const RECITERS = {
+
+
+    /* =====================================================
+       1. MISHARY
+    ===================================================== */
+
+    alafasy: {
+
+        name:
+            "Mishary Rashid Alafasy",
+
+        edition:
+            "ar.alafasy",
+
+        bitrate:
+            128,
+
+        cover:
+            "https://i.ytimg.com/vi/GLMp_EGGLfk/hq720.jpg"
+
+    },
+
+
+    /* =====================================================
+       2. HUSARY
+    ===================================================== */
+
+    husary: {
+
+        name:
+            "Mahmoud Khalil Al-Husary",
+
+        edition:
+            "ar.husary",
+
+        bitrate:
+            128,
+
+        cover:
+            "https://i.ibb.co.com/60WBhmcn/mahmoud-khalil-al-hussary-profile-1.png"
+
+    },
+
+
+    /* =====================================================
+       3. MINSHawi
+    ===================================================== */
+
+    minshawi: {
+
+        name:
+            "Mohamed Siddiq Al-Minshawi",
+
+        edition:
+            "ar.minshawi",
+
+        bitrate:
+            128,
+
+        cover:
+            "https://i.ibb.co.com/qLhspK0C/ab67616d0000b273066a714dbb5c25660403f700.jpg"
+
+    },
+
+
+    /* =====================================================
+       11. HUDHAIFY
+    ===================================================== */
+
+    hudhaify: {
+
+        name:
+            "Ali Al-Hudhaify",
+
+        edition:
+            "ar.hudhaify",
+
+        bitrate:
+            128,
+
+        cover:
+            "https://i.ibb.co.com/Xxf20z7g/2-1.jpg"
+
+    },
+
+
+    /* =====================================================
+       12. MUHAMMAD JIBREEL
+    ===================================================== */
+
+    muhammadjibreel: {
+
+        name:
+            "Muhammad Jibreel",
+
+        edition:
+            "ar.muhammadjibreel",
+
+        bitrate:
+            128,
+
+        cover:
+            "https://i.ibb.co.com/FqwPXz7n/muhammad-jebril.png"
+
+    },
+
+
+    /* =====================================================
+       13. ABDULLAH BASFAR
+    ===================================================== */
+
+    abdullahbasfar: {
+
+        name:
+            "Abdullah Basfar",
+
+        edition:
+            "ar.abdullahbasfar",
+
+        bitrate:
+            192,
+
+        cover:
+            "https://i.ibb.co.com/HTVdtTHZ/images-23.jpg"
+
+    },
+
+
+    /* =====================================================
+       14. ABDURRAHMAAN AS-SUDAIS
+    ===================================================== */
+
+    abdurrahmaansudais: {
+
+        name:
+            "Abdurrahmaan As-Sudais",
+
+        edition:
+            "ar.abdurrahmaansudais",
+
+        bitrate:
+            192,
+
+        cover:
+            "https://i.ibb.co.com/VWrjdxSg/images.webp"
+
+    },
+
+
+    /* =====================================================
+       15. MAHER AL-MUAIQLY
+    ===================================================== */
+
+    mahermuaiqly: {
+
+        name:
+            "Maher Al-Muaiqly",
+
+        edition:
+            "ar.mahermuaiqly",
+
+        bitrate:
+            128,
+
+        cover:
+            "https://i.ibb.co.com/0ytHB9vh/Maher-Al-Mueaqly.png"
+
+    },
+
+
+ 
+    /* =====================================================
+       17. ABU BAKR ASH-SHATREE
+    ===================================================== */
+
+    shaatree: {
+
+        name:
+            "Abu Bakr Ash-Shatree",
+
+        edition:
+            "ar.shaatree",
+
+        bitrate:
+            128,
+
+        cover:
+            "https://i.ibb.co.com/prKxM4wG/ab67616d0000b273293107a0af826fc079a73596.jpg"
+
+    },
+  
+};
+
+
+/* =========================================================
+   STATE
+========================================================= */
+
+let state = {
+
+    mode:
+        "ayah",
+
+    isPlaying:
+        false,
+
+    surahList:
+        [],
+
+    currentSurahData:
+        null,
+
+    currentIndex:
+        0,
+
+    currentReciter:
+        "alafasy",
+
+    radioTitle:
+        "Radio Mekarindah",
+
+    radioArtist:
+        "Live Streaming",
+
+    lastMetadata:
+        ""
+
+};
+
+
+/* =========================================================
+   DOM
+========================================================= */
+
+const audioPlayer =
+    document.getElementById(
+        "audioPlayer"
+    );
+
+
+const playBtn =
+    document.getElementById(
+        "playBtn"
+    );
+
+
+const coverArt =
+    document.getElementById(
+        "coverArt"
+    );
+
+
+const reciterSelect =
+    document.getElementById(
+        "reciterSelect"
+    );
+
+
+const surahSelect =
+    document.getElementById(
+        "surahSelect"
+    );
+
+
+const quranContainer =
+    document.getElementById(
+        "quranContainer"
+    );
+
+
+const trackTitle =
+    document.getElementById(
+        "currentTrackTitle"
+    );
+
+
+const reciterName =
+    document.getElementById(
+        "currentReciter"
+    );
+
+
+const loaderOverlay =
+    document.getElementById(
+        "loaderOverlay"
+    );
+
+
+const loaderText =
+    document.getElementById(
+        "loaderText"
+    );
+
+
+const appContainer =
+    document.querySelector(
+        ".app-container"
+    );
+
+
+const radioNowPlayingDiv =
+    document.getElementById(
+        "radioNowPlaying"
+    );
+
+
+const radioStatusText =
+    document.getElementById(
+        "radioStatusText"
+    );
+
+
+/* =========================================================
+   HTML ESCAPE
+========================================================= */
+
+function escapeHtml(text) {
+
+    const div =
+        document.createElement(
+            "div"
+        );
+
+    div.textContent =
+        text || "";
+
+    return div.innerHTML;
+
+}
+
+
+/* =========================================================
+   NORMALIZE
+========================================================= */
+
+function normalizeText(text) {
+
+    return String(text || "")
+        .toLowerCase()
+        .replace(/[–—−]/g, "-")
+        .replace(/\s+/g, " ")
+        .trim();
+
+}
+
+
+/* =========================================================
+   RENDER RECITERS
+========================================================= */
+
+function renderReciters() {
+
+    reciterSelect.innerHTML =
+        "";
+
+
+    Object.keys(RECITERS)
+        .forEach(
+            function(key) {
+
+                const reciter =
+                    RECITERS[key];
+
+
+                const option =
+                    document.createElement(
+                        "option"
+                    );
+
+
+                option.value =
+                    key;
+
+
+                option.textContent =
+                    reciter.name;
+
+
+                reciterSelect
+                    .appendChild(
+                        option
+                    );
+
+            }
+        );
+
+
+    reciterSelect.value =
+        state.currentReciter;
+
+}
+
+
+/* =========================================================
+   SET COVER
+========================================================= */
+
+function setCover(url) {
+
+    if (!url) {
+
+        coverArt.src =
+            DEFAULT_RADIO_COVER;
+
+        return;
+
+    }
+
+
+    const img =
+        new Image();
+
+
+    img.onload =
+        function() {
+
+            coverArt.src =
+                url;
+
+        };
+
+
+    img.onerror =
+        function() {
+
+            coverArt.src =
+                DEFAULT_RADIO_COVER;
+
+        };
+
+
+    img.src =
+        url;
+
+}
+
+
+/* =========================================================
+   RECITER CHANGE
+========================================================= */
+
+function handleReciterChange(key) {
+
+    if (!RECITERS[key])
+        return;
+
+
+    state.currentReciter =
+        key;
+
+
+    const reciter =
+        RECITERS[key];
+
+
+    reciterName.innerText =
+        reciter.name;
+
+
+    setCover(
+        reciter.cover
+    );
+
+
+    if (
+        state.currentSurahData &&
+        state.mode === "ayah"
+    ) {
+
+        setAyahAudio(
+            state.currentIndex
+        );
+
+
+        playAudio();
+
+    }
+
+}
+
+
+/* =========================================================
+   SURAH LIST
+========================================================= */
+
+function renderSurahOptions() {
+
+    surahSelect.innerHTML =
+        "";
+
+
+    state.surahList.forEach(
+        function(s) {
+
+            const option =
+                document.createElement(
+                    "option"
+                );
+
+
+            option.value =
+                s.number;
+
+
+            option.textContent =
+                `${s.number}. ${s.englishName} (${s.name})`;
+
+
+            surahSelect.appendChild(
+                option
+            );
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   SURAH CHANGE
+========================================================= */
+
+function handleSurahChange(value) {
+
+    const number =
+        parseInt(value);
+
+
+    if (
+        !isNaN(number)
+    ) {
+
+        loadSurah(
+            number,
+            true
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   LOAD SURAH
+========================================================= */
+
+async function loadSurah(
+    surahNumber,
+    autoPlay
+) {
+
+    if (
+        state.mode === "radio"
+    )
+        return;
+
+
+    stopAudio();
+
+
+    showLoader(
+        true,
+        `Memuat Surat ke-${surahNumber}...`
+    );
+
+
+    quranContainer.innerHTML =
+        "";
+
+
+    try {
+
+        const url =
+            `${API_BASE}/surah/${surahNumber}/editions/quran-uthmani,id.indonesian`;
+
+
+        const response =
+            await fetch(url);
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                "Gagal mengambil data surat."
+            );
+
+        }
+
+
+        const json =
+            await response.json();
+
+
+        if (
+            json.code !== 200
+        ) {
+
+            throw new Error(
+                "Data surat tidak valid."
+            );
+
+        }
+
+
+        const arabic =
+            json.data[0];
+
+
+        const translation =
+            json.data[1];
+
+
+        state.currentSurahData = {
+
+            number:
+                arabic.number,
+
+            englishName:
+                arabic.englishName,
+
+            name:
+                arabic.name,
+
+            ayahs:
+                arabic.ayahs.map(
+                    function(ayah, index) {
+
+                        return {
+
+                            numberInSurah:
+                                ayah.numberInSurah,
+
+                            text:
+                                ayah.text,
+
+                            translation:
+                                translation
+                                    .ayahs[index]
+                                    .text,
+
+                            globalId:
+                                ayah.number
+
+                        };
+
+                    }
+                )
+
+        };
+
+
+        state.currentIndex =
+            0;
+
+
+        surahSelect.value =
+            surahNumber;
+
+
+        updateTrackInfo();
+
+
+        renderAyahList();
+
+
+        setAyahAudio(0);
+
+
+        if (autoPlay) {
+
+            setTimeout(
+                function() {
+
+                    playAudio();
+
+                },
+                300
+            );
+
+        }
+
+    }
+    catch(error) {
+
+        console.error(error);
+
+
+        quranContainer.innerHTML =
+            `
+            <div style="
+                padding:30px;
+                text-align:center;
+                color:#ef4444;
+            ">
+
+                <i class="fas fa-triangle-exclamation"></i>
+
+                <br><br>
+
+                ${escapeHtml(
+                    error.message
+                )}
+
+            </div>
+            `;
+
+    }
+    finally {
+
+        showLoader(
+            false
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   RENDER AYAT
+========================================================= */
+
+function renderAyahList() {
+
+    if (
+        !state.currentSurahData
+    )
+        return;
+
+
+    quranContainer.innerHTML =
+        "";
+
+
+    state.currentSurahData.ayahs
+        .forEach(
+            function(ayah,index) {
+
+                const element =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                element.className =
+                    "ayah-item";
+
+
+                element.id =
+                    `ayah-card-${index}`;
+
+
+                element.onclick =
+                    function() {
+
+                        if (
+                            state.mode !==
+                            "ayah"
+                        )
+                            return;
+
+
+                        setAyahAudio(
+                            index
+                        );
+
+
+                        playAudio();
+
+                    };
+
+
+                element.innerHTML = `
+
+                    <div class="ayah-header">
+
+                        <span>
+                            Ayat
+                            ${ayah.numberInSurah}
+                        </span>
+
+                        <i class="fas fa-play"></i>
+
+                    </div>
+
+
+                    <div class="arabic-text">
+
+                        ${ayah.text}
+
+                    </div>
+
+
+                    <div class="translation-text">
+
+                        ${ayah.translation}
+
+                    </div>
+
+                `;
+
+
+                quranContainer.appendChild(
+                    element
+                );
+
+            }
+        );
+
+}
+
+
+/* =========================================================
+   SET AYAH AUDIO
+========================================================= */
+
+function setAyahAudio(index) {
+
+    if (
+        !state.currentSurahData
+    )
+        return;
+
+
+    const ayahs =
+        state.currentSurahData.ayahs;
+
+
+    if (
+        index < 0 ||
+        index >= ayahs.length
+    )
+        return;
+
+
+    state.currentIndex =
+        index;
+
+
+    const ayah =
+        ayahs[index];
+
+
+    const reciter =
+        RECITERS[
+            state.currentReciter
+        ];
+
+
+    if (!reciter)
+        return;
+
+
+    /*
+       URL AUDIO DINAMIS
+
+       contoh:
+
+       ar.alafasy
+       ar.husary
+       ar.sudais
+       ar.ajamy
+
+    */
+
+    const src =
+        `https://cdn.islamic.network/quran/audio/${reciter.bitrate}/${reciter.edition}/${ayah.globalId}.mp3`;
+
+
+    audioPlayer.src =
+        src;
+
+
+    highlightAyah(
+        index
+    );
+
+}
+
+
+/* =========================================================
+   PLAY
+========================================================= */
+
+function playAudio() {
+
+    if (
+        !audioPlayer.src
+    )
+        return;
+
+
+    audioPlayer.play()
+        .then(
+            function() {
+
+                state.isPlaying =
+                    true;
+
+
+                updatePlayButton();
+
+            }
+        )
+        .catch(
+            function(error) {
+
+                console.log(
+                    "Playback:",
+                    error
+                );
+
+
+                state.isPlaying =
+                    false;
+
+
+                updatePlayButton();
+
+            }
+        );
+
+}
+
+
+/* =========================================================
+   STOP
+========================================================= */
+
+function stopAudio() {
+
+    audioPlayer.pause();
+
+
+    audioPlayer.currentTime =
+        0;
+
+
+    audioPlayer.removeAttribute(
+        "src"
+    );
+
+
+    audioPlayer.load();
+
+
+    state.isPlaying =
+        false;
+
+
+    updatePlayButton();
+
+}
+
+
+/* =========================================================
+   TOGGLE
+========================================================= */
+
+function togglePlay() {
+
+    if (
+        state.mode === "radio"
+    ) {
+
+        toggleRadio();
+
+        return;
+
+    }
+
+
+    if (
+        audioPlayer.paused
+    ) {
+
+        playAudio();
+
+    }
+    else {
+
+        audioPlayer.pause();
+
+
+        state.isPlaying =
+            false;
+
+
+        updatePlayButton();
+
+    }
+
+}
+
+
+/* =========================================================
+   NEXT AYAH
+========================================================= */
+
+function nextAyah() {
+
+    if (
+        state.mode !== "ayah" ||
+        !state.currentSurahData
+    )
+        return;
+
+
+    const max =
+        state.currentSurahData
+            .ayahs.length - 1;
+
+
+    if (
+        state.currentIndex <
+        max
+    ) {
+
+        setAyahAudio(
+            state.currentIndex + 1
+        );
+
+
+        playAudio();
+
+    }
+    else {
+
+        const nextSurah =
+            state.currentSurahData
+                .number + 1;
+
+
+        if (
+            nextSurah <= 114
+        ) {
+
+            loadSurah(
+                nextSurah,
+                true
+            );
+
+        }
+
+    }
+
+}
+
+
+/* =========================================================
+   PREVIOUS AYAH
+========================================================= */
+
+function prevAyah() {
+
+    if (
+        state.mode !== "ayah" ||
+        !state.currentSurahData
+    )
+        return;
+
+
+    if (
+        state.currentIndex > 0
+    ) {
+
+        setAyahAudio(
+            state.currentIndex - 1
+        );
+
+
+        playAudio();
+
+    }
+
+}
+
+
+/* =========================================================
+   AUDIO ENDED
+========================================================= */
+
+audioPlayer.onended =
+    function() {
+
+        if (
+            state.mode ===
+            "ayah"
+        ) {
+
+            nextAyah();
+
+        }
+
+    };
+
+
+/* =========================================================
+   AUDIO ERROR
+========================================================= */
+
+audioPlayer.onerror =
+    function() {
+
+        if (
+            state.mode === "ayah" &&
+            state.isPlaying
+        ) {
+
+            console.log(
+                "Audio error. Mencoba ayat berikutnya..."
+            );
+
+
+            setTimeout(
+                function() {
+
+                    nextAyah();
+
+                },
+                800
+            );
+
+        }
+
+
+        if (
+            state.mode === "radio" &&
+            state.isPlaying
+        ) {
+
+            reconnectRadio();
+
+        }
+
+    };
+
+
+/* =========================================================
+   HIGHLIGHT
+========================================================= */
+
+function highlightAyah(index) {
+
+    document
+        .querySelectorAll(
+            ".ayah-item.active"
+        )
+        .forEach(
+            function(el) {
+
+                el.classList.remove(
+                    "active"
+                );
+
+            }
+        );
+
+
+    const target =
+        document.getElementById(
+            `ayah-card-${index}`
+        );
+
+
+    if (target) {
+
+        target.classList.add(
+            "active"
+        );
+
+
+        target.scrollIntoView({
+
+            behavior:
+                "smooth",
+
+            block:
+                "center"
+
+        });
+
+    }
+
+}
+
+
+/* =========================================================
+   UPDATE PLAY BUTTON
+========================================================= */
+
+function updatePlayButton() {
+
+    if (
+        state.isPlaying
+    ) {
+
+        playBtn.innerHTML =
+            '<i class="fas fa-pause"></i>';
+
+
+        coverArt.classList.add(
+            "spinning"
+        );
+
+    }
+    else {
+
+        playBtn.innerHTML =
+            '<i class="fas fa-play"></i>';
+
+
+        coverArt.classList.remove(
+            "spinning"
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   UPDATE TRACK
+========================================================= */
+
+function updateTrackInfo() {
+
+    if (
+        state.mode !== "ayah" ||
+        !state.currentSurahData
+    )
+        return;
+
+
+    const reciter =
+        RECITERS[
+            state.currentReciter
+        ];
+
+
+    trackTitle.innerText =
+        `QS. ${state.currentSurahData.englishName}`;
+
+
+    reciterName.innerText =
+        reciter.name;
+
+
+    setCover(
+        reciter.cover
+    );
+
+
+    radioNowPlayingDiv.style.display =
+        "none";
+
+}
+
+
+/* =========================================================
+   LOADER
+========================================================= */
+
+function showLoader(
+    show,
+    text
+) {
+
+    loaderText.innerText =
+        text ||
+        "Memuat...";
+
+
+    loaderOverlay.style.display =
+        show
+        ? "flex"
+        : "none";
+
+}
+
+
+/* =========================================================
+   VOLUME
+========================================================= */
+
+function setVolume(value) {
+
+    audioPlayer.volume =
+        parseFloat(value);
+
+}
+
+
+/* =========================================================
+   RADIO METADATA
+========================================================= */
+
+function setupRadioMetadata() {
+
+    setInterval(
+        function() {
+
+            if (
+                state.mode !==
+                "radio"
+            )
+                return;
+
+
+            const element =
+                document.querySelector(
+                    ".cc_streaminfo"
+                );
+
+
+            if (!element)
+                return;
+
+
+            const raw =
+                (
+                    element.innerText ||
+                    element.textContent ||
+                    ""
+                ).trim();
+
+
+            if (
+                !raw ||
+                raw === "Loading ..." ||
+                raw === "Loading..."
+            )
+                return;
+
+
+            if (
+                raw ===
+                state.lastMetadata
+            )
+                return;
+
+
+            state.lastMetadata =
+                raw;
+
+
+            parseRadioMetadata(
+                raw
+            );
+
+        },
+        2000
+    );
+
+}
+
+
+/* =========================================================
+   PARSE RADIO
+========================================================= */
+
+function parseRadioMetadata(raw) {
+
+    let artist =
+        "Radio Mekarindah";
+
+
+    let title =
+        raw;
+
+
+    if (
+        raw.includes(" - ")
+    ) {
+
+        const parts =
+            raw.split(" - ");
+
+
+        artist =
+            parts.shift()
+                .trim();
+
+
+        title =
+            parts.join(" - ")
+                .trim();
+
+    }
+
+
+    state.radioArtist =
+        artist;
+
+
+    state.radioTitle =
+        title;
+
+
+    trackTitle.innerText =
+        title;
+
+
+    reciterName.innerText =
+        artist;
+
+
+    /*
+       Cari cover berdasarkan artist.
+    */
+
+    const cover =
+        findRadioReciterCover(
+            artist,
+            title
+        );
+
+
+    if (cover) {
+
+        setCover(
+            cover
+        );
+
+    }
+    else {
+
+        setCover(
+            DEFAULT_RADIO_COVER
+        );
+
+    }
+
+
+    radioNowPlayingDiv.style.display =
+        "inline-block";
+
+
+    radioNowPlayingDiv.innerHTML =
+        `<i class="fas fa-headphones"></i>
+         ${escapeHtml(
+             title.substring(0,40)
+         )}`;
+
+
+    if (radioStatusText) {
+
+        radioStatusText.innerHTML =
+            `<i class="fas fa-music"></i>
+             ${escapeHtml(title)}
+             -
+             ${escapeHtml(artist)}`;
+
+    }
+
+}
+
+
+/* =========================================================
+   RADIO COVER
+========================================================= */
+
+function findRadioReciterCover(
+    artist,
+    title
+) {
+
+    const text =
+        normalizeText(
+            artist + " " + title
+        );
+
+
+    /*
+       Cek reciter yang sama
+       dengan database Murottal.
+    */
+
+    const keys =
+        Object.keys(
+            RECITERS
+        );
+
+
+    for (
+        const key of keys
+    ) {
+
+        const reciter =
+            RECITERS[key];
+
+
+        const name =
+            normalizeText(
+                reciter.name
+            );
+
+
+        if (
+            text.includes(name)
+        ) {
+
+            return reciter.cover;
+
+        }
+
+    }
+
+
+    /*
+       Alias populer.
+    */
+
+    const aliases = {
+
+        "mishary":
+            "alafasy",
+
+        "alafasy":
+            "alafasy",
+
+        "husary":
+            "husary",
+
+        "minshawi":
+            "minshawi",
+
+        "sudais":
+            "sudais",
+
+        "shuraim":
+            "shuraim",
+
+        "abdul basit":
+            "abdulbasit",
+
+        "abdulbasit":
+            "abdulbasit",
+
+        "ajamy":
+            "ajamy",
+
+        "ajmi":
+            "ajamy",
+
+        "ayyoub":
+            "muhammadayoub",
+
+        "ayyub":
+            "muhammadayoub",
+
+        "hudhaify":
+            "hudhaify",
+
+        "jibreel":
+            "muhammadjibreel",
+
+        "maher":
+            "mahermuaiqly",
+
+        "muaiqly":
+            "mahermuaiqly",
+
+        "dosari":
+            "yasserdossari",
+
+        "dossari":
+            "yasserdossari",
+
+        "yasser":
+            "yasserdossari",
+
+        "shatree":
+            "shaatree",
+
+        "shatri":
+            "shaatree",
+
+        "fares":
+            "fares"
+
+    };
+
+
+    for (
+        const alias in aliases
+    ) {
+
+        if (
+            text.includes(alias)
+        ) {
+
+            return RECITERS[
+                aliases[alias]
+            ].cover;
+
+        }
+
+    }
+
+
+    return null;
+
+}
+
+
+/* =========================================================
+   SWITCH MODE
+========================================================= */
+
+function switchMode(mode) {
+
+    if (
+        state.mode === mode
+    )
+        return;
+
+
+    state.mode =
+        mode;
+
+
+    stopAudio();
+
+
+    document.getElementById(
+        "modeAyah"
+    ).className =
+        "mode-btn " +
+        (
+            mode === "ayah"
+            ? "active"
+            : ""
+        );
+
+
+    document.getElementById(
+        "modeRadio"
+    ).className =
+        "mode-btn " +
+        (
+            mode === "radio"
+            ? "active"
+            : ""
+        );
+
+
+    if (
+        mode === "radio"
+    ) {
+
+        /* ===============================================
+           RADIO
+        =============================================== */
+
+        appContainer.classList.add(
+            "radio-active"
+        );
+
+
+        audioPlayer.src =
+            RADIO_STREAM_URL;
+
+
+        state.radioTitle =
+            "Radio Mekarindah";
+
+
+        state.radioArtist =
+            "Live Streaming";
+
+
+        state.lastMetadata =
+            "";
+
+
+        trackTitle.innerText =
+            state.radioTitle;
+
+
+        reciterName.innerText =
+            state.radioArtist;
+
+
+        setCover(
+            DEFAULT_RADIO_COVER
+        );
+
+
+        radioNowPlayingDiv.style.display =
+            "inline-block";
+
+
+        if (radioStatusText) {
+
+            radioStatusText.innerHTML =
+                `<i class="fas fa-circle-notch fa-spin"></i>
+                 Menghubungkan...`;
+
+        }
+
+
+        setTimeout(
+            function() {
+
+                toggleRadio();
+
+            },
+            200
+        );
+
+    }
+    else {
+
+        /* ===============================================
+           MUROTTAL
+        =============================================== */
+
+        appContainer.classList.remove(
+            "radio-active"
+        );
+
+
+        radioNowPlayingDiv.style.display =
+            "none";
+
+
+        updateTrackInfo();
+
+
+        if (
+            state.currentSurahData
+        ) {
+
+            setAyahAudio(
+                state.currentIndex
+            );
+
+        }
+        else {
+
+            loadSurah(
+                1,
+                false
+            );
+
+        }
+
+    }
+
+}
+
+
+/* =========================================================
+   RADIO TOGGLE
+========================================================= */
+
+function toggleRadio() {
+
+    if (
+        state.mode !== "radio"
+    )
+        return;
+
+
+    if (
+        audioPlayer.paused
+    ) {
+
+        audioPlayer.play()
+            .then(
+                function() {
+
+                    state.isPlaying =
+                        true;
+
+
+                    updatePlayButton();
+
+
+                    if (radioStatusText) {
+
+                        radioStatusText.innerHTML =
+                            `<i class="fas fa-check-circle"></i>
+                             Live Streaming`;
+
+                    }
+
+                }
+            )
+            .catch(
+                function(error) {
+
+                    console.log(
+                        error
+                    );
+
+
+                    state.isPlaying =
+                        false;
+
+
+                    updatePlayButton();
+
+
+                    if (radioStatusText) {
+
+                        radioStatusText.innerHTML =
+                            `<i class="fas fa-exclamation-triangle"></i>
+                             Gagal terhubung`;
+
+                    }
+
+                }
+            );
+
+    }
+    else {
+
+        audioPlayer.pause();
+
+
+        state.isPlaying =
+            false;
+
+
+        updatePlayButton();
+
+
+        if (radioStatusText) {
+
+            radioStatusText.innerHTML =
+                `<i class="fas fa-pause-circle"></i>
+                 Dijeda`;
+
+        }
+
+    }
+
+}
+
+
+/* =========================================================
+   RADIO RECONNECT
+========================================================= */
+
+function reconnectRadio() {
+
+    if (
+        state.mode !== "radio"
+    )
+        return;
+
+
+    if (radioStatusText) {
+
+        radioStatusText.innerHTML =
+            `<i class="fas fa-sync fa-spin"></i>
+             Menghubungkan kembali...`;
+
+    }
+
+
+    setTimeout(
+        function() {
+
+            if (
+                state.mode !==
+                "radio"
+            )
+                return;
+
+
+            audioPlayer.src =
+                RADIO_STREAM_URL;
+
+
+            audioPlayer.play()
+                .then(
+                    function() {
+
+                        state.isPlaying =
+                            true;
+
+
+                        updatePlayButton();
+
+                    }
+                )
+                .catch(
+                    function() {
+
+                        reconnectRadio();
+
+                    }
+                );
+
+        },
+        3000
+    );
+
+}
+
+
+/* =========================================================
+   KEYBOARD
+========================================================= */
+
+document.addEventListener(
+    "keydown",
+    function(event) {
+
+        if (
+            event.code ===
+            "Space"
+        ) {
+
+            if (
+                event.target.tagName !==
+                "SELECT" &&
+                event.target.tagName !==
+                "INPUT"
+            ) {
+
+                event.preventDefault();
+
+                togglePlay();
+
+            }
+
+        }
+
+
+        if (
+            event.code ===
+            "ArrowRight"
+        ) {
+
+            if (
+                state.mode ===
+                "ayah"
+            ) {
+
+                nextAyah();
+
+            }
+
+        }
+
+
+        if (
+            event.code ===
+            "ArrowLeft"
+        ) {
+
+            if (
+                state.mode ===
+                "ayah"
+            ) {
+
+                prevAyah();
+
+            }
+
+        }
+
+    }
+);
+
+
+/* =========================================================
+   INITIALIZATION
+========================================================= */
+
+window.addEventListener(
+    "DOMContentLoaded",
+    async function() {
+
+        try {
+
+            /*
+               Render reciter terlebih dahulu.
+            */
+
+            renderReciters();
+
+
+            /*
+               Set Mishary.
+            */
+
+            state.currentReciter =
+                "alafasy";
+
+
+            reciterSelect.value =
+                "alafasy";
+
+
+            const mishary =
+                RECITERS.alafasy;
+
+
+            reciterName.innerText =
+                mishary.name;
+
+
+            setCover(
+                mishary.cover
+            );
+
+
+            /*
+               Ambil daftar surat.
+            */
+
+            const response =
+                await fetch(
+                    `${API_BASE}/surah`
+                );
+
+
+            const data =
+                await response.json();
+
+
+            if (
+                data.code === 200
+            ) {
+
+                state.surahList =
+                    data.data;
+
+
+                renderSurahOptions();
+
+
+                await loadSurah(
+                    1,
+                    false
+                );
+
+            }
+
+
+            /*
+               Radio metadata.
+            */
+
+            setupRadioMetadata();
+
+
+            /*
+               Volume.
+            */
+
+            audioPlayer.volume =
+                1;
+
+        }
+        catch(error) {
+
+            console.error(
+                error
+            );
+
+
+            quranContainer.innerHTML =
+                `
+                <div style="
+                    text-align:center;
+                    padding:30px;
+                    color:#ef4444;
+                ">
+
+                    Gagal memuat aplikasi.
+
+                    <br><br>
+
+                    ${escapeHtml(
+                        error.message
+                    )}
+
+                </div>
+                `;
+
+        }
+
+    });
+
+
+</script>
+
+</body>
+</html>
